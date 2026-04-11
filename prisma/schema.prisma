@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  KETUA_RT
+  BENDAHARA
+  WARGA
+}
+
+enum TransactionType {
+  PEMASUKAN
+  PENGELUARAN
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  OVERDUE
+}
+
+enum SuratStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SuratType {
+  DOMISILI
+  PENGANTAR
+  IZIN_USAHA
+  KETERANGAN_TIDAK_MAMPU
+  LAINNYA
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  phone         String?
+  role          Role      @default(WARGA)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  warga         Warga?
+  transactions  Transaction[]
+  payments      Payment[]
+  surats        Surat[]
+  auditLogs     AuditLog[]
+  announcements Announcement[]
+  activities    Activity[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([role])
+}
+
+enum WargaStatus {
+  AKTIF
+  PINDAH
+  MENINGGAL
+  NONAKTIF
+}
+
+model Warga {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  nik             String    @unique
+  nomorRumah      String
+  alamat          String
+  rt              String    @default("001")
+  rw              String    @default("001")
+  kelurahan       String
+  kecamatan       String
+  statusPerkawinan String?
+  pekerjaan       String?
+  status          WargaStatus @default(AKTIF)
+
+  monthlyFee      Float     @default(50000)
+  lastPayment     DateTime?
+  totalPaid       Float     @default(0)
+  totalDebt       Float     @default(0)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([nomorRumah])
+  @@index([userId])
+  @@index([status])
+}
+
+model Transaction {
+  id              String          @id @default(cuid())
+  type            TransactionType
+  category        String
+  description     String
+  amount          Float
+  date            DateTime        @default(now())
+
+  createdBy       String
+  user            User            @relation(fields: [createdBy], references: [id])
+
+  attachmentUrl   String?
+  notes           String?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([type])
+  @@index([date])
+  @@index([createdBy])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+
+  amount          Float
+  period          String
+  description     String
+  status          PaymentStatus @default(PENDING)
+
+  paymentMethod   String?
+  paymentProof    String?
+  transactionId   String?
+  midtransOrderId String?       @unique
+
+  paidAt          DateTime?
+  dueDate         DateTime
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([period])
+}
+
+model Surat {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+
+  type            SuratType
+  title           String
+  purpose         String
+  status          SuratStatus @default(PENDING)
+
+  data            Json
+
+  approvedBy      String?
+  approvedAt      DateTime?
+  rejectedReason  String?
+
+  pdfUrl          String?
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+}
+
+model Activity {
+  id              String    @id @default(cuid())
+  title           String
+  description     String
+  type            String
+  location        String?
+
+  startDate       DateTime
+  endDate         DateTime?
+
+  createdBy       String
+  user            User      @relation(fields: [createdBy], references: [id])
+
+  reminderSent    Boolean   @default(false)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([startDate])
+  @@index([createdBy])
+}
+
+model Announcement {
+  id              String    @id @default(cuid())
+  title           String
+  content         String
+  priority        String    @default("normal")
+
+  createdBy       String
+  user            User      @relation(fields: [createdBy], references: [id])
+
+  isActive        Boolean   @default(true)
+  notificationSent Boolean  @default(false)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([createdBy])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+
+  action          String
+  module          String
+  description     String
+  ipAddress       String?
+  userAgent       String?
+
+  oldData         Json?
+  newData         Json?
+
+  createdAt       DateTime  @default(now())
+
+  @@index([userId])
+  @@index([module])
+  @@index([createdAt])
+}
+
+model Notification {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title           String
+  message         String
+  type            String    @default("SYSTEM")
+  isRead          Boolean   @default(false)
+  relatedId       String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model Setting {
+  id              String    @id @default(cuid())
+  key             String    @unique
+  value           String
+  description     String?
+
+  updatedAt       DateTime  @updatedAt
+
+  @@index([key])
+}
+
+model Backup {
+  id              String    @id @default(cuid())
+  filename        String
+  filesize        Int
+  path            String
+  status          String    @default("completed")
+
+  createdAt       DateTime  @default(now())
+
+  @@index([createdAt])
+}
