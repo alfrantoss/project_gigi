@@ -9,7 +9,8 @@ export function generateSuratDomisili(data: any) {
   const doc = new jsPDF();
 
   doc.setFontSize(16);
-  doc.text('SURAT KETERANGAN DOMISILI', 105, 20, { align: 'center' });
+  const title = data.title || 'SURAT KETERANGAN DOMISILI';
+  doc.text(title.toUpperCase(), 105, 20, { align: 'center' });
 
   doc.setFontSize(10);
   doc.text(`Nomor: ${data.nomor || '-'}`, 105, 30, { align: 'center' });
@@ -28,7 +29,8 @@ export function generateSuratDomisili(data: any) {
   doc.text(`Pekerjaan: ${data.pekerjaan || '-'}`, 30, 111);
   doc.text(`Alamat: ${data.alamat}`, 30, 118);
 
-  doc.text('Adalah benar berdomisili di wilayah RT kami dan merupakan warga yang baik.', 20, 130);
+  const footerText = data.footer || 'Adalah benar berdomisili di wilayah RT kami dan merupakan warga yang baik.';
+  doc.text(footerText, 20, 130);
 
   doc.text('Demikian surat keterangan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.', 20, 145);
 

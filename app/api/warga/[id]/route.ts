@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import * as bcrypt from "bcrypt";
 
 export async function GET(
   request: NextRequest,
@@ -70,6 +71,7 @@ export async function PUT(
       pekerjaan,
       monthlyFee,
       status,
+      password,
     } = body;
 
     // Find warga
@@ -93,6 +95,7 @@ export async function PUT(
           name: name || warga.user.name,
           email: email || warga.user.email,
           phone: phone || warga.user.phone,
+          ...(password ? { password: await bcrypt.hash(password, 10) } : {}),
         },
       }),
       prisma.warga.update({
@@ -107,7 +110,7 @@ export async function PUT(
           kecamatan: kecamatan || warga.kecamatan,
           statusPerkawinan: statusPerkawinan || warga.statusPerkawinan,
           pekerjaan: pekerjaan || warga.pekerjaan,
-          monthlyFee: monthlyFee || warga.monthlyFee,
+          monthlyFee: monthlyFee ? parseFloat(monthlyFee) : warga.monthlyFee,
           status: status || warga.status,
         },
         include: { user: true },

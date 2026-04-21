@@ -133,6 +133,10 @@ export default function SuratPage() {
     }
   };
 
+  const handleDownload = (id: string) => {
+    window.location.href = `/api/surat/${id}/download`;
+  };
+
   const canManage = ['SUPER_ADMIN', 'KETUA_RT'].includes(session?.user.role || '');
   const isWarga = session?.user.role === 'WARGA';
 
@@ -305,8 +309,12 @@ export default function SuratPage() {
                           </Button>
                         </>
                       )}
-                      {surat.status === 'APPROVED' && surat.pdfUrl && (
-                        <Button size="sm" variant="outline">
+                      {surat.status === 'APPROVED' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDownload(surat.id)}
+                        >
                           <Download className="h-4 w-4 mr-1" />
                           Unduh
                         </Button>

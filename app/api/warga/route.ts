@@ -24,8 +24,6 @@ export async function GET(request: NextRequest) {
     if (search) {
       where.OR = [
         { nik: { contains: search, mode: "insensitive" } },
-        { nomorRumah: { contains: search, mode: "insensitive" } },
-        { alamat: { contains: search, mode: "insensitive" } },
         {
           user: {
             name: { contains: search, mode: "insensitive" },

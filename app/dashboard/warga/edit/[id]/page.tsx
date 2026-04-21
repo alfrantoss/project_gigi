@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 export default function EditWargaPage() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function EditWargaPage() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,6 +40,7 @@ export default function EditWargaPage() {
     pekerjaan: "",
     monthlyFee: "",
     status: "AKTIF",
+    password: "",
   });
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function EditWargaPage() {
         pekerjaan: data.pekerjaan || "",
         monthlyFee: data.monthlyFee.toString(),
         status: data.status,
+        password: "",
       });
     } catch (error) {
       toast({
@@ -170,6 +173,32 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, phone: e.target.value })
                 }
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password Baru (Opsional)</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder="Kosongkan jika tidak ingin mengubah"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </div>
           </CardContent>
         </Card>

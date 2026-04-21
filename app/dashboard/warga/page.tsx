@@ -34,25 +34,44 @@ export default function WargaPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedWargaId, setSelectedWargaId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    fetchWarga();
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [search]);
 
-  const fetchWarga = async () => {
+  useEffect(() => {
+    fetchWarga(debouncedSearch);
+  }, [debouncedSearch]);
+
+  const fetchWarga = async (searchQuery = "") => {
+    setSearching(true);
     try {
-      const url = search ? `/api/warga?search=${search}` : "/api/warga";
+      const url = searchQuery ? `/api/warga?search=${searchQuery}` : "/api/warga";
       const response = await fetch(url);
       const data = await response.json();
-      setWarga(data.warga);
+      
+      if (!response.ok) throw new Error(data.error || "Gagal mengambil data");
+      
+      setWarga(data.warga || []);
       setStats(data.stats);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch warga:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Gagal mengambil data warga",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
+      setSearching(false);
     }
   };
 
@@ -209,15 +228,20 @@ export default function WargaPage() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>Daftar Warga</CardTitle>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Cari warga..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+              <div className="relative w-72">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Cari nama atau NIK..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10"
+                />
+                {searching && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin h-4 w-4 border-2 border-slate-300 border-t-slate-600 rounded-full"></div>
+                  </div>
+                )}
+              </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -235,56 +259,70 @@ export default function WargaPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {warga.map((w) => (
-                <TableRow key={w.id}>
-                  <TableCell className="font-medium">{w.nomorRumah}</TableCell>
-                  <TableCell>{w.user.name}</TableCell>
-                  <TableCell>{w.nik}</TableCell>
-                  <TableCell>{w.alamat}</TableCell>
-                  <TableCell>{w.user.phone || "-"}</TableCell>
-                  <TableCell className="text-right">
-                    Rp {w.monthlyFee.toLocaleString("id-ID")}
+              {searching && warga.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    Mencari warga...
                   </TableCell>
-                  <TableCell className="text-right">
-                    <span
-                      className={
-                        w.totalDebt > 0 ? "text-red-600 font-medium" : ""
-                      }
-                    >
-                      Rp {w.totalDebt.toLocaleString("id-ID")}
-                    </span>
+                </TableRow>
+              ) : warga.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-24 text-center text-slate-500">
+                    {search ? "Warga tidak ditemukan" : "Tidak ada data warga"}
                   </TableCell>
-                  <TableCell className="text-center">
-                    {canManage ? (
-                      <div className="flex gap-2 justify-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditWarga(w.id)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        {canDelete && (
+                </TableRow>
+              ) : (
+                warga.map((w) => (
+                  <TableRow key={w.id} className={searching ? "opacity-50" : ""}>
+                    <TableCell className="font-medium">{w.nomorRumah}</TableCell>
+                    <TableCell>{w.user.name}</TableCell>
+                    <TableCell>{w.nik}</TableCell>
+                    <TableCell>{w.alamat}</TableCell>
+                    <TableCell>{w.user.phone || "-"}</TableCell>
+                    <TableCell className="text-right">
+                      Rp {w.monthlyFee.toLocaleString("id-ID")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span
+                        className={
+                          w.totalDebt > 0 ? "text-red-600 font-medium" : ""
+                        }
+                      >
+                        Rp {w.totalDebt.toLocaleString("id-ID")}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {canManage ? (
+                        <div className="flex gap-2 justify-center">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => {
-                              setSelectedWargaId(w.id);
-                              setDeleteDialogOpen(true);
-                            }}
+                            onClick={() => handleEditWarga(w.id)}
+                            className="h-8 w-8 p-0"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Edit2 className="h-4 w-4" />
                           </Button>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="text-sm text-slate-500">-</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                          {canDelete && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                setSelectedWargaId(w.id);
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-slate-500">-</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
 
