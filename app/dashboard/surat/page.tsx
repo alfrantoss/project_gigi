@@ -73,6 +73,9 @@ export default function SuratPage() {
       keperluan: '',
     },
   });
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [selectedSuratId, setSelectedSuratId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   useEffect(() => {
     fetchSurats();
@@ -130,6 +133,27 @@ export default function SuratPage() {
       }
     } catch (error) {
       console.error('Failed to approve surat:', error);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!selectedSuratId || !rejectionReason) return;
+
+    try {
+      const response = await fetch(`/api/surat/${selectedSuratId}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: rejectionReason }),
+      });
+
+      if (response.ok) {
+        setRejectDialogOpen(false);
+        setRejectionReason('');
+        setSelectedSuratId(null);
+        fetchSurats();
+      }
+    } catch (error) {
+      console.error('Failed to reject surat:', error);
     }
   };
 
@@ -303,7 +327,15 @@ export default function SuratPage() {
                             <Check className="h-4 w-4 mr-1" />
                             Setujui
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            onClick={() => {
+                              setSelectedSuratId(surat.id);
+                              setRejectDialogOpen(true);
+                            }}
+                          >
                             <X className="h-4 w-4 mr-1" />
                             Tolak
                           </Button>
@@ -327,6 +359,47 @@ export default function SuratPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tolak Pengajuan Surat</DialogTitle>
+            <DialogDescription>
+              Berikan alasan mengapa pengajuan surat ini ditolak.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reason">Alasan Penolakan</Label>
+              <Textarea
+                id="reason"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Masukkan alasan penolakan..."
+                className="min-h-[100px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRejectDialogOpen(false);
+                setRejectionReason('');
+              }}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleReject}
+              disabled={!rejectionReason.trim()}
+            >
+              Tolak Sekarang
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
