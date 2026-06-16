@@ -14,6 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
+      <head>
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <title>Sistem Manajemen Warga - Pesona Gading Cibitung 1</title>
+      </head>
       <body className={inter.className}>
         <SessionProvider>
           {children}

@@ -33,10 +33,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white">
       <div className="flex h-screen">
         <aside className="hidden lg:block w-64 border-r">
-          <Sidebar role={session.user.role} />
+          <Sidebar role={session.user.role} id="desktop" />
         </aside>
 
         {sidebarOpen && (
@@ -45,7 +45,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onClick={() => setSidebarOpen(false)}
           >
             <div className="w-64 h-full" onClick={(e) => e.stopPropagation()}>
-              <Sidebar role={session.user.role} />
+              <Sidebar role={session.user.role} id="mobile" />
             </div>
           </div>
         )}

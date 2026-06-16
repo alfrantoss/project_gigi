@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import {
   Home,
   Wallet,
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
   role: string;
+  id?: string;
 }
 
 const menuItems = {
@@ -79,56 +81,147 @@ const menuItems = {
   ],
 };
 
-export function Sidebar({ role }: SidebarProps) {
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -15 },
+  show: { 
+    opacity: 1, 
+    x: 0, 
+    transition: { 
+      type: "spring", 
+      stiffness: 140, 
+      damping: 16 
+    } 
+  },
+};
+
+export function Sidebar({ role, id = "desktop" }: SidebarProps) {
   const pathname = usePathname();
   const items = menuItems[role as keyof typeof menuItems] || menuItems.WARGA;
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 text-white">
-      <div className="p-6 border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white rounded-lg">
-            <Home className="h-6 w-6 text-slate-900" />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg">Sistem Manajemen Warga</h1>
-            <p className="text-xs text-slate-400">Pesona Gading Cibitung 1</p>
-          </div>
+    <div className="flex flex-col h-full bg-[#1C2F57] text-white">
+      <div className="p-6 border-b border-white/10">
+        <div className="flex flex-col items-center text-center gap-4">
+          <motion.div 
+            className="h-20 w-20 rounded-xl overflow-hidden bg-white flex items-center justify-center flex-shrink-0 shadow-md cursor-pointer border-2 border-[#B59A5A]"
+            whileHover={{ 
+              scale: 1.08, 
+              rotate: [0, -3, 3, -3, 0],
+              boxShadow: "0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)"
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            {/* Silakan simpan foto/logo Anda di folder public/ dengan nama logo.png (atau sesuaikan ekstensinya) */}
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                // Fallback jika file gambar belum ada atau salah nama
+                e.currentTarget.style.display = 'none';
+                if (e.currentTarget.parentElement) {
+                  e.currentTarget.parentElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-slate-900"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
+                }
+              }}
+            />
+          </motion.div>
+          <motion.div 
+            className="space-y-1"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <h1 className="font-bold text-base tracking-wide leading-snug">Sistem Manajemen Warga</h1>
+            <p className="text-xs text-[#B59A5A] font-semibold tracking-wider uppercase">Pesona Gading Cibitung 1</p>
+          </motion.div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="space-y-1"
+        >
+          {items.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
-                isActive
-                  ? "bg-white text-slate-900 font-medium"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white",
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+            return (
+              <motion.div
+                key={item.href}
+                variants={itemVariants}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all relative z-0 group",
+                    isActive
+                      ? "text-[#B59A5A] font-bold"
+                      : "text-slate-300 hover:text-white",
+                  )}
+                >
+                  {isActive && (
+                    <>
+                      <motion.div
+                        layoutId={`active-pill-${id}`}
+                        className="absolute inset-0 bg-white rounded-lg -z-10 shadow-sm"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
+                      <motion.div
+                        layoutId={`active-line-${id}`}
+                        className="absolute left-1.5 top-3.5 bottom-3.5 w-1 bg-[#B59A5A] rounded-full"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
+                    </>
+                  )}
+                  
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg -z-10" />
+                  )}
+
+                  <Icon className={cn(
+                    "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
+                    isActive ? "text-[#B59A5A]" : "text-slate-400 group-hover:text-slate-200"
+                  )} />
+                  <span>{item.label}</span>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </nav>
 
-      <div className="p-4 border-t border-slate-800">
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-slate-300 hover:bg-slate-800 hover:text-white"
-          onClick={() => signOut({ callbackUrl: "/auth/login" })}
+      <div className="p-4 border-t border-white/10">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <LogOut className="h-5 w-5 mr-3" />
-          Keluar
-        </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-slate-300 hover:bg-white/10 hover:text-white"
+            onClick={() => signOut({ callbackUrl: "/auth/login" })}
+          >
+            <LogOut className="h-5 w-5 mr-3 text-slate-400" />
+            Keluar
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
