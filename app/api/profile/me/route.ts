@@ -6,12 +6,25 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+    
+    console.log("Session:", JSON.stringify(session, null, 2));
+    
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!session.user?.id) {
+      console.error("Session user ID is missing:", session);
+      return NextResponse.json({ 
+        error: "Session invalid. Please logout and login again.",
+        code: "INVALID_SESSION"
+      }, { status: 401 });
+    }
+
+    console.log("Fetching user with ID:", session.user.id);
+
     const user = await prisma.user.findUnique({
-      where: { id: session.user?.id },
+      where: { id: session.user.id },
       select: {
         id: true,
         name: true,
@@ -30,15 +43,19 @@ export async function GET(req: Request) {
             monthlyFee: true,
             totalPaid: true,
             totalDebt: true,
+            ektp: true,
+            kartuKeluarga: true,
           },
         },
       },
     });
 
     if (!user) {
+      console.error("User not found in database for ID:", session.user.id);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    console.log("User found:", user.email, user.role);
     return NextResponse.json(user);
   } catch (error) {
     console.error("Profile fetch error:", error);
@@ -56,6 +73,11 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!session.user?.id) {
+      console.error("Session user ID is missing in PUT:", session);
+      return NextResponse.json({ error: "Session user ID not found" }, { status: 401 });
+    }
+
     const { name, phone } = await req.json();
 
     const updateData: any = {};
@@ -63,7 +85,7 @@ export async function PUT(req: Request) {
     if (phone) updateData.phone = phone;
 
     const user = await prisma.user.update({
-      where: { id: session.user?.id },
+      where: { id: session.user.id },
       data: updateData,
       select: {
         id: true,

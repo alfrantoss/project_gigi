@@ -18,6 +18,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, User, Mail, Phone, Home, FileText } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/id";
+
+dayjs.extend(relativeTime);
+dayjs.locale("id");
 
 interface UserProfile {
   id: string;
@@ -85,18 +90,38 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const response = await fetch("/api/profile/me");
-      if (!response.ok) throw new Error("Failed to fetch profile");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error:", errorData);
+        
+        // Jika session invalid, redirect ke logout
+        if (errorData.code === "INVALID_SESSION" || response.status === 401) {
+          toast({
+            title: "Session Expired",
+            description: "Silakan login kembali",
+            variant: "destructive",
+          });
+          // Redirect ke logout setelah 2 detik
+          setTimeout(() => {
+            window.location.href = "/api/auth/signout";
+          }, 2000);
+          return;
+        }
+        
+        throw new Error(errorData.error || "Failed to fetch profile");
+      }
       const data = await response.json();
+      console.log("Profile data received:", data);
       setProfile(data);
       setFormData({
-        name: data.name,
+        name: data.name || "",
         phone: data.phone || "",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fetch profile error:", error);
       toast({
         title: "Error",
-        description: "Gagal memuat profil",
+        description: error.message || "Gagal memuat profil",
         variant: "destructive",
       });
     } finally {
@@ -277,33 +302,33 @@ export default function ProfilePage() {
                     <Home className="w-5 h-5 text-slate-400" />
                     <div>
                       <p className="text-xs text-slate-600">Nomor Rumah</p>
-                      <p className="font-medium">{profile.warga.nomorRumah}</p>
+                      <p className="font-medium">{profile.warga?.nomorRumah || "-"}</p>
                     </div>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg">
                     <p className="text-xs text-slate-600">Status Warga</p>
                     <Badge
                       className={
-                        statusColors[profile.warga.status] || "bg-gray-100"
+                        statusColors[profile.warga?.status || "AKTIF"] || "bg-gray-100"
                       }
                     >
-                      {profile.warga.status}
+                      {profile.warga?.status || "AKTIF"}
                     </Badge>
                   </div>
                   <div className="md:col-span-2 p-3 bg-slate-50 rounded-lg">
                     <p className="text-xs text-slate-600">Alamat</p>
                     <p className="font-medium text-sm">
-                      {profile.warga.alamat}
+                      {profile.warga?.alamat || "-"}
                     </p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg">
                     <p className="text-xs text-slate-600">NIK</p>
-                    <p className="font-mono text-sm">{profile.warga.nik}</p>
+                    <p className="font-mono text-sm">{profile.warga?.nik || "-"}</p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg">
                     <p className="text-xs text-slate-600">Iuran Bulanan</p>
                     <p className="font-medium">
-                      {formatCurrency(profile.warga.monthlyFee)}
+                      {formatCurrency(profile.warga?.monthlyFee || 0)}
                     </p>
                   </div>
                 </div>
@@ -327,9 +352,9 @@ export default function ProfilePage() {
                       <FileText className="w-5 h-5 text-slate-600" />
                       <p className="font-medium text-sm">E-KTP</p>
                     </div>
-                    {profile.warga.ektp ? (
+                    {profile.warga?.ektp ? (
                       <a
-                        href={profile.warga.ektp}
+                        href={profile.warga?.ektp || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-blue-600 hover:underline"
@@ -347,9 +372,9 @@ export default function ProfilePage() {
                       <FileText className="w-5 h-5 text-slate-600" />
                       <p className="font-medium text-sm">Kartu Keluarga</p>
                     </div>
-                    {profile.warga.kartuKeluarga ? (
+                    {profile.warga?.kartuKeluarga ? (
                       <a
-                        href={profile.warga.kartuKeluarga}
+                        href={profile.warga?.kartuKeluarga || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-blue-600 hover:underline"
@@ -383,7 +408,7 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-green-600">
-                  {formatCurrency(profile.warga.totalPaid)}
+                  {formatCurrency(profile.warga?.totalPaid || 0)}
                 </p>
                 <p className="text-xs text-slate-600 mt-1">
                   Iuran yang sudah dibayar
@@ -397,7 +422,7 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-red-600">
-                  {formatCurrency(profile.warga.totalDebt)}
+                  {formatCurrency(profile.warga?.totalDebt || 0)}
                 </p>
                 <p className="text-xs text-slate-600 mt-1">
                   Sisa iuran yang belum dibayar

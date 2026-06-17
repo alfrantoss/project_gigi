@@ -51,18 +51,44 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // On sign in, add user data to token
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        console.log("JWT callback - User signed in:", { id: user.id, email: user.email, role: user.role });
       }
+      
+      // On update or other triggers, verify token has required data
+      if (!token.id || !token.role) {
+        console.warn("JWT token missing id or role:", token);
+      }
+      
       return token;
     },
     async session({ session, token }) {
+      // Ensure session.user exists
       if (session?.user) {
+        // Map token data to session
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        
+        console.log("Session callback - Session created:", { 
+          id: session.user.id, 
+          email: session.user.email, 
+          role: session.user.role 
+        });
+        
+        // Validate session has required fields
+        if (!session.user.id) {
+          console.error("Session created without user ID! Token:", token);
+        }
       }
+      
       return session;
     },
   },
