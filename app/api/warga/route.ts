@@ -149,6 +149,8 @@ export async function POST(request: NextRequest) {
       statusPerkawinan,
       pekerjaan,
       monthlyFee,
+      ektp,
+      kartuKeluarga,
     } = body;
 
     if (!name || !email || !password || !nik || !nomorRumah || !alamat) {
@@ -201,6 +203,8 @@ export async function POST(request: NextRequest) {
             statusPerkawinan,
             pekerjaan,
             monthlyFee: monthlyFee || 50000,
+            ektp: ektp || null,
+            kartuKeluarga: kartuKeluarga || null,
           },
         },
       },

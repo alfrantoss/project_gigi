@@ -71,6 +71,18 @@ export default function SuratPage() {
       tempatLahir: '',
       tanggalLahir: '',
       keperluan: '',
+      jenisKelamin: 'Laki-laki',
+      agama: 'Islam',
+      noTelp: '',
+      jenisUsaha: '',
+      lokasiUsaha: '',
+      statusHubungan: 'Kepala Keluarga',
+      namaBapak: '',
+      umurBapak: '',
+      pekerjaanBapak: '',
+      namaIbu: '',
+      umurIbu: '',
+      pekerjaanIbu: 'Ibu Rumah Tangga',
     },
   });
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -270,6 +282,133 @@ export default function SuratPage() {
                     }
                   />
                 </div>
+
+                {/* Field khusus untuk Surat Izin Usaha */}
+                {formData.type === 'IZIN_USAHA' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="jenisUsaha">Jenis Usaha</Label>
+                      <Input
+                        id="jenisUsaha"
+                        value={formData.data.jenisUsaha}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            data: { ...formData.data, jenisUsaha: e.target.value },
+                          })
+                        }
+                        placeholder="Contoh: Toko Kelontong"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="noTelp">Nomor Telepon</Label>
+                      <Input
+                        id="noTelp"
+                        value={formData.data.noTelp}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            data: { ...formData.data, noTelp: e.target.value },
+                          })
+                        }
+                        placeholder="08xx"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Field khusus untuk SKTM */}
+                {formData.type === 'KETERANGAN_TIDAK_MAMPU' && (
+                  <>
+                    <div className="pt-2 border-t">
+                      <Label className="font-semibold">Data Orang Tua / Wali</Label>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="namaBapak">Nama Bapak</Label>
+                      <Input
+                        id="namaBapak"
+                        value={formData.data.namaBapak}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            data: { ...formData.data, namaBapak: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="umurBapak">Umur</Label>
+                        <Input
+                          id="umurBapak"
+                          type="number"
+                          value={formData.data.umurBapak}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              data: { ...formData.data, umurBapak: e.target.value },
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="pekerjaanBapak">Pekerjaan</Label>
+                        <Input
+                          id="pekerjaanBapak"
+                          value={formData.data.pekerjaanBapak}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              data: { ...formData.data, pekerjaanBapak: e.target.value },
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="namaIbu">Nama Ibu</Label>
+                      <Input
+                        id="namaIbu"
+                        value={formData.data.namaIbu}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            data: { ...formData.data, namaIbu: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="umurIbu">Umur</Label>
+                        <Input
+                          id="umurIbu"
+                          type="number"
+                          value={formData.data.umurIbu}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              data: { ...formData.data, umurIbu: e.target.value },
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="pekerjaanIbu">Pekerjaan</Label>
+                        <Input
+                          id="pekerjaanIbu"
+                          value={formData.data.pekerjaanIbu}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              data: { ...formData.data, pekerjaanIbu: e.target.value },
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>

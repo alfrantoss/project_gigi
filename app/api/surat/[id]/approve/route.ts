@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { generateSuratDomisili, generateSuratPengantar } from '@/utils/pdf-generator';
+import { 
+  generateSuratDomisili, 
+  generateSuratPengantar,
+  generateSuratIzinUsaha,
+  generateSuratKeteranganTidakMampu,
+  generateSuratLainnya
+} from '@/utils/pdf-generator';
 
 export async function POST(
   request: NextRequest,
@@ -53,12 +59,29 @@ export async function POST(
       kecamatan: surat.user.warga?.kecamatan,
       pekerjaan: surat.user.warga?.pekerjaan,
       ketuaRT: session.user.name,
+      keperluan: surat.purpose,
+      purpose: surat.purpose,
+      title: surat.title,
     };
 
-    if (surat.type === 'DOMISILI') {
-      pdfDoc = generateSuratDomisili(pdfData);
-    } else if (surat.type === 'PENGANTAR') {
-      pdfDoc = generateSuratPengantar(pdfData);
+    // Generate PDF based on surat type
+    switch (surat.type) {
+      case 'DOMISILI':
+        pdfDoc = generateSuratDomisili(pdfData);
+        break;
+      case 'PENGANTAR':
+        pdfDoc = generateSuratPengantar(pdfData);
+        break;
+      case 'IZIN_USAHA':
+        pdfDoc = generateSuratIzinUsaha(pdfData);
+        break;
+      case 'KETERANGAN_TIDAK_MAMPU':
+        pdfDoc = generateSuratKeteranganTidakMampu(pdfData);
+        break;
+      case 'LAINNYA':
+      default:
+        pdfDoc = generateSuratLainnya(pdfData);
+        break;
     }
 
     const pdfUrl = pdfDoc

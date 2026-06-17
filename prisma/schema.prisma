@@ -87,6 +87,10 @@ model Warga {
   pekerjaan       String?
   status          WargaStatus @default(AKTIF)
 
+  // Dokumen
+  ektp            String?
+  kartuKeluarga   String?
+
   monthlyFee      Float     @default(50000)
   lastPayment     DateTime?
   totalPaid       Float     @default(0)

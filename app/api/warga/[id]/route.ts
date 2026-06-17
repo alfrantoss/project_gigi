@@ -72,6 +72,8 @@ export async function PUT(
       monthlyFee,
       status,
       password,
+      ektp,
+      kartuKeluarga,
     } = body;
 
     // Find warga
@@ -112,6 +114,8 @@ export async function PUT(
           pekerjaan: pekerjaan || warga.pekerjaan,
           monthlyFee: monthlyFee ? parseFloat(monthlyFee) : warga.monthlyFee,
           status: status || warga.status,
+          ektp: ektp !== undefined ? ektp : warga.ektp,
+          kartuKeluarga: kartuKeluarga !== undefined ? kartuKeluarga : warga.kartuKeluarga,
         },
         include: { user: true },
       }),
