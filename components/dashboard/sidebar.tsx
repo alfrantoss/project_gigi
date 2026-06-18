@@ -115,8 +115,7 @@ export function Sidebar({ role, id = "desktop" }: SidebarProps) {
           <motion.div 
             className="h-20 w-20 rounded-xl overflow-hidden bg-white flex items-center justify-center flex-shrink-0 shadow-md cursor-pointer border-2 border-[#B59A5A]"
             whileHover={{ 
-              scale: 1.08, 
-              rotate: [0, -3, 3, -3, 0],
+              scale: 1.08,
               boxShadow: "0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3)"
             }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
@@ -142,12 +141,12 @@ export function Sidebar({ role, id = "desktop" }: SidebarProps) {
             transition={{ delay: 0.1 }}
           >
             <h1 className="font-bold text-base tracking-wide leading-snug">Sistem Manajemen Warga</h1>
-            <p className="text-xs text-[#B59A5A] font-semibold tracking-wider uppercase">Pesona Gading Cibitung 1</p>
+            <p className="text-xs text-white font-semibold tracking-wider uppercase">Pesona Gading Cibitung 1</p>
           </motion.div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-white/20 [&::-webkit-scrollbar-thumb]:bg-white/70 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-white/90">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -170,8 +169,8 @@ export function Sidebar({ role, id = "desktop" }: SidebarProps) {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-lg transition-all relative z-0 group",
                     isActive
-                      ? "text-[#B59A5A] font-bold"
-                      : "text-slate-300 hover:text-white",
+                      ? "text-slate-900 font-bold"
+                      : "text-white hover:text-white",
                   )}
                 >
                   {isActive && (
@@ -183,7 +182,7 @@ export function Sidebar({ role, id = "desktop" }: SidebarProps) {
                       />
                       <motion.div
                         layoutId={`active-line-${id}`}
-                        className="absolute left-1.5 top-3.5 bottom-3.5 w-1 bg-[#B59A5A] rounded-full"
+                        className="absolute left-1.5 top-3.5 bottom-3.5 w-1 bg-slate-900 rounded-full"
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
                       />
                     </>
@@ -195,7 +194,7 @@ export function Sidebar({ role, id = "desktop" }: SidebarProps) {
 
                   <Icon className={cn(
                     "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-                    isActive ? "text-[#B59A5A]" : "text-slate-400 group-hover:text-slate-200"
+                    isActive ? "text-slate-900" : "text-white group-hover:text-white"
                   )} />
                   <span>{item.label}</span>
                 </Link>
@@ -215,10 +214,10 @@ export function Sidebar({ role, id = "desktop" }: SidebarProps) {
         >
           <Button
             variant="ghost"
-            className="w-full justify-start text-slate-300 hover:bg-white/10 hover:text-white"
+            className="w-full justify-start text-white hover:bg-white/10 hover:text-white"
             onClick={() => signOut({ callbackUrl: "/auth/login" })}
           >
-            <LogOut className="h-5 w-5 mr-3 text-slate-400" />
+            <LogOut className="h-5 w-5 mr-3 text-white" />
             Keluar
           </Button>
         </motion.div>

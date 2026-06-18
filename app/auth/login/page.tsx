@@ -89,7 +89,7 @@ export default function LoginPage() {
           <div className="space-y-4 max-w-lg mb-12">
             <h2 className="text-4xl font-extrabold leading-tight tracking-tight text-white lg:text-5xl">
               Kemudahan Layanan <br />
-              <span className="text-[#B59A5A]">Manajemen Warga</span>
+              <span className="text-white">Manajemen Warga</span>
             </h2>
             <p className="text-white/80 text-lg leading-relaxed">
               Platform pelayanan digital RT 001 / RW 016 untuk transparansi keuangan, efisiensi administrasi, dan koordinasi kegiatan warga yang lebih harmonis.

@@ -226,22 +226,18 @@ function AdminDashboard({ stats, role }: { stats: any; role?: string }) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={stats?.wargaByStatus || []}
-                  dataKey="count"
-                  nameKey="status"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  label={(entry) => `${entry.status}: ${entry.count}`}
-                >
-                  {(stats?.wargaByStatus || []).map((_: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
+              <BarChart 
+                data={stats?.wargaByStatus || []} 
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis dataKey="status" type="category" width={80} />
                 <Tooltip />
-              </PieChart>
+                <Legend />
+                <Bar dataKey="count" name="Jumlah Warga" fill="#10b981" radius={[0, 8, 8, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
@@ -282,11 +278,11 @@ function AdminDashboard({ stats, role }: { stats: any; role?: string }) {
         <Card>
           <CardHeader>
             <CardTitle>Transaksi Terakhir</CardTitle>
-            <CardDescription>10 transaksi terbaru</CardDescription>
+            <CardDescription>5 transaksi terbaru</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {stats?.recentTransactions?.slice(0, 10).map((t: any) => (
+              {stats?.recentTransactions?.slice(0, 5).map((t: any) => (
                 <div key={t.id} className="flex items-center justify-between text-sm border-b pb-2">
                   <div className="flex-1">
                     <p className="font-medium text-slate-900">{t.description}</p>
@@ -374,7 +370,7 @@ function WargaDashboard({ stats }: { stats: any }) {
   return (
     <>
       {/* Personal Info Card */}
-      <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+      <Card className="bg-[#1C2F57] text-white">
         <CardHeader>
           <CardTitle className="text-white">Informasi Rumah Saya</CardTitle>
         </CardHeader>
@@ -453,33 +449,59 @@ function WargaDashboard({ stats }: { stats: any }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Payment Status Pie Chart */}
+        {/* Payment Status Progress Bar */}
         <Card>
           <CardHeader>
             <CardTitle>Status Pembayaran Saya</CardTitle>
             <CardDescription>Perbandingan sudah dibayar vs hutang</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: 'Terbayar', value: stats?.totalPaid || 0 },
-                    { name: 'Hutang', value: stats?.totalDebt || 0 },
-                  ]}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label={(entry) => `${entry.name}: ${formatCurrency(entry.value)}`}
+          <CardContent className="space-y-6">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-slate-900">Total Terbayar</span>
+                <span className="text-sm font-bold text-green-600">{formatCurrency(stats?.totalPaid || 0)}</span>
+              </div>
+              <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-green-500 to-green-600 h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
+                  style={{ 
+                    width: `${Math.min(100, ((stats?.totalPaid || 0) / ((stats?.totalPaid || 0) + (stats?.totalDebt || 1))) * 100)}%` 
+                  }}
                 >
-                  <Cell fill="#10b981" />
-                  <Cell fill="#ef4444" />
-                </Pie>
-                <Tooltip formatter={(value: any) => formatCurrency(value)} />
-              </PieChart>
-            </ResponsiveContainer>
+                  <span className="text-xs font-bold text-white">
+                    {Math.round(((stats?.totalPaid || 0) / ((stats?.totalPaid || 0) + (stats?.totalDebt || 1))) * 100)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-slate-900">Sisa Hutang</span>
+                <span className="text-sm font-bold text-red-600">{formatCurrency(stats?.totalDebt || 0)}</span>
+              </div>
+              <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-red-500 to-red-600 h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
+                  style={{ 
+                    width: `${Math.min(100, ((stats?.totalDebt || 0) / ((stats?.totalPaid || 1) + (stats?.totalDebt || 0))) * 100)}%` 
+                  }}
+                >
+                  <span className="text-xs font-bold text-white">
+                    {Math.round(((stats?.totalDebt || 0) / ((stats?.totalPaid || 1) + (stats?.totalDebt || 0))) * 100)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-slate-600">Total Keseluruhan</span>
+                <span className="text-lg font-bold text-slate-900">
+                  {formatCurrency((stats?.totalPaid || 0) + (stats?.totalDebt || 0))}
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
