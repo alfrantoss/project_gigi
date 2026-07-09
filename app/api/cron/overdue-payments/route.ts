@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     if (token !== cronSecret) {
       return NextResponse.json(
-        { error: "Unauthorized - invalid token" },
+        { error: "Autentikasi gagal - token tidak valid" },
         { status: 401 },
       );
     }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to process cron job",
+        error: error.message || "Gagal memproses tugas cron",
       },
       { status: 500 },
     );
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Failed to process cron job",
+        error: error.message || "Gagal memproses tugas cron",
       },
       { status: 500 },
     );

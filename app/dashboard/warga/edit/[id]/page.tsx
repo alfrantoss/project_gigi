@@ -85,7 +85,7 @@ export default function EditWargaPage() {
       });
     } catch (error) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Gagal mengambil data warga",
         variant: "destructive",
       });
@@ -106,7 +106,7 @@ export default function EditWargaPage() {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Hanya file JPG, PNG, dan PDF yang diperbolehkan",
         variant: "destructive",
       });
@@ -116,7 +116,7 @@ export default function EditWargaPage() {
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Ukuran file maksimal 5MB",
         variant: "destructive",
       });
@@ -157,7 +157,7 @@ export default function EditWargaPage() {
       });
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message,
         variant: "destructive",
       });
@@ -201,7 +201,7 @@ export default function EditWargaPage() {
       router.push("/dashboard/warga");
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message,
         variant: "destructive",
       });

@@ -68,7 +68,7 @@ export default function TambahWargaPage() {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Hanya file JPG, PNG, dan PDF yang diperbolehkan",
         variant: "destructive",
       });
@@ -78,7 +78,7 @@ export default function TambahWargaPage() {
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Ukuran file maksimal 5MB",
         variant: "destructive",
       });
@@ -119,7 +119,7 @@ export default function TambahWargaPage() {
       });
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message,
         variant: "destructive",
       });
@@ -144,7 +144,7 @@ export default function TambahWargaPage() {
 
     if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Password tidak sesuai",
         variant: "destructive",
       });
@@ -191,7 +191,7 @@ export default function TambahWargaPage() {
       router.push("/dashboard/warga");
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message || "Gagal menambahkan warga",
         variant: "destructive",
       });
@@ -336,6 +336,8 @@ export default function TambahWargaPage() {
                         onChange={handleChange}
                         placeholder="01"
                         required
+                        onInvalid={handleTextValidation('Nomor rumah')}
+                        onInput={resetValidation}
                       />
                     </div>
                     <div className="space-y-2">
@@ -382,6 +384,8 @@ export default function TambahWargaPage() {
                       onChange={handleChange}
                       placeholder="Alamat lengkap"
                       required
+                      onInvalid={handleTextareaValidation('Alamat')}
+                      onInput={resetValidation}
                     />
                   </div>
 

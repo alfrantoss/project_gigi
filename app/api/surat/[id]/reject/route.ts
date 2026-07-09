@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { createNotification, sendWhatsApp } from '@/utils/notification';
 
 export async function POST(
   request: NextRequest,
@@ -11,11 +12,11 @@ export async function POST(
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
     }
 
     if (!['SUPER_ADMIN', 'KETUA_RT'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -30,6 +31,14 @@ export async function POST(
 
     const surat = await prisma.surat.findUnique({
       where: { id: params.id },
+      include: {
+        user: {
+          select: {
+            name: true,
+            phone: true,
+          },
+        },
+      },
     });
 
     if (!surat) {
@@ -50,6 +59,45 @@ export async function POST(
         rejectedReason: reason,
       },
     });
+
+    // Create notification
+    await createNotification(
+      surat.userId,
+      'Pengajuan Surat Ditolak',
+      `Pengajuan surat "${surat.title}" Anda ditolak. Alasan: ${reason}`,
+      'SYSTEM',
+      surat.id,
+    );
+
+    // Send WhatsApp notification
+    if (surat.user.phone) {
+      const suratTypeMap: Record<string, string> = {
+        DOMISILI: 'Surat Keterangan Domisili',
+        PENGANTAR: 'Surat Pengantar',
+        IZIN_USAHA: 'Surat Izin Usaha',
+        KETERANGAN_TIDAK_MAMPU: 'Surat Keterangan Tidak Mampu',
+        LAINNYA: 'Surat Keterangan',
+      };
+
+      const waMessage = `❌ *Pengajuan Surat Ditolak*
+
+Halo *${surat.user.name}*,
+
+Mohon maaf, pengajuan surat Anda ditolak.
+
+📄 Jenis: ${suratTypeMap[surat.type] || 'Surat'}
+📝 Judul: ${surat.title}
+🕐 Waktu: ${new Date().toLocaleString("id-ID")}
+
+📋 *Alasan Penolakan:*
+${reason}
+
+Anda dapat mengajukan ulang dengan melengkapi persyaratan yang diperlukan.
+
+_Sistem Manajemen Warga RT 001 RW 016_`;
+
+      await sendWhatsApp(surat.user.phone, waMessage);
+    }
 
     return NextResponse.json({
       message: 'Surat berhasil ditolak',

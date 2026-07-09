@@ -80,7 +80,7 @@ export default function ActivitiesPage() {
 
       if (!response.ok) throw new Error("Failed to delete activity");
 
-      toast({ title: "Success", description: "Kegiatan berhasil dihapus" });
+      toast({ title: "Sukses", description: "Kegiatan berhasil dihapus" });
       setActivities(activities.filter((a) => a.id !== deleteDialog.id));
       setDeleteDialog({ open: false, id: "", title: "" });
     } catch (error) {

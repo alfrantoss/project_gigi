@@ -10,7 +10,7 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const announcement = await prisma.announcement.findUnique({
@@ -24,7 +24,7 @@ export async function GET(
 
     if (!announcement) {
       return NextResponse.json(
-        { error: "Announcement not found" },
+        { error: "Pengumuman tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -33,7 +33,7 @@ export async function GET(
   } catch (error) {
     console.error("Get announcement error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch announcement" },
+      { error: "Gagal memuat pengumuman" },
       { status: 500 },
     );
   }
@@ -46,7 +46,7 @@ export async function PUT(
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Only creator or admin can update
@@ -56,7 +56,7 @@ export async function PUT(
 
     if (!announcement) {
       return NextResponse.json(
-        { error: "Announcement not found" },
+        { error: "Pengumuman tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -65,7 +65,7 @@ export async function PUT(
       announcement.createdBy !== session.user?.id &&
       session.user?.role !== "SUPER_ADMIN"
     ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     const { title, content, priority, isActive } = await req.json();
@@ -102,7 +102,7 @@ export async function PUT(
   } catch (error) {
     console.error("Update announcement error:", error);
     return NextResponse.json(
-      { error: "Failed to update announcement" },
+      { error: "Gagal memperbarui pengumuman" },
       { status: 500 },
     );
   }
@@ -115,12 +115,12 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Only SUPER_ADMIN can delete
     if (session.user?.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     const announcement = await prisma.announcement.findUnique({
@@ -129,7 +129,7 @@ export async function DELETE(
 
     if (!announcement) {
       return NextResponse.json(
-        { error: "Announcement not found" },
+        { error: "Pengumuman tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -150,11 +150,11 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json({ message: "Announcement deleted successfully" });
+    return NextResponse.json({ message: "Pengumuman berhasil dihapus" });
   } catch (error) {
     console.error("Delete announcement error:", error);
     return NextResponse.json(
-      { error: "Failed to delete announcement" },
+      { error: "Gagal menghapus pengumuman" },
       { status: 500 },
     );
   }

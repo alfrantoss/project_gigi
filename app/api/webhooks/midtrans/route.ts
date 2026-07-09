@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createNotification, sendWhatsApp } from "@/utils/notification";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     if (!orderId) {
       return NextResponse.json(
-        { error: "Order ID not provided" },
+        { error: "Order ID tidak disediakan" },
         { status: 400 },
       );
     }
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     if (!payment) {
       console.error("Payment not found for order:", orderId);
-      return NextResponse.json({ error: "Payment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
     }
 
     // Determine payment status
@@ -88,6 +89,35 @@ export async function POST(request: NextRequest) {
           createdBy: payment.userId,
         },
       });
+
+      // Send notification to user
+      await createNotification(
+        payment.userId,
+        "Pembayaran Berhasil",
+        `Pembayaran iuran ${payment.period} sebesar Rp ${payment.amount.toLocaleString("id-ID")} telah diterima.`,
+        "PAYMENT_SUCCESS",
+        payment.id,
+      );
+
+      // Send WhatsApp notification
+      if (payment.user.phone) {
+        const waMessage = `✅ *Pembayaran Berhasil*
+
+Halo *${payment.user.name}*,
+
+Pembayaran iuran RT Anda telah berhasil dikonfirmasi:
+
+📅 Periode: ${payment.period}
+💰 Nominal: Rp ${payment.amount.toLocaleString("id-ID")}
+🕐 Waktu: ${new Date().toLocaleString("id-ID")}
+📝 ID Transaksi: ${notification.transaction_id}
+
+Terima kasih atas pembayaran tepat waktu Anda! 🙏
+
+_Sistem Manajemen Warga RT 001 RW 016_`;
+
+        await sendWhatsApp(payment.user.phone, waMessage);
+      }
     }
 
     return NextResponse.json({

@@ -138,7 +138,7 @@ export default function EditActivityPage() {
         throw new Error(error.error || "Failed to update activity");
       }
 
-      toast({ title: "Success", description: "Kegiatan berhasil diperbarui" });
+      toast({ title: "Sukses", description: "Kegiatan berhasil diperbarui" });
       router.push("/dashboard/activities");
     } catch (error) {
       console.error("Update activity error:", error);

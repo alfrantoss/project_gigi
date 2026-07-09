@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const role = session.user.role;
@@ -268,7 +268,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Dashboard stats error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch dashboard stats" },
+      { error: "Gagal mengambil statistik dashboard" },
       { status: 500 }
     );
   }

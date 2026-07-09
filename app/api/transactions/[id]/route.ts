@@ -12,7 +12,7 @@ export async function GET(
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
     }
 
     const transaction = await prisma.transaction.findUnique({
@@ -49,11 +49,11 @@ export async function PUT(
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
     }
 
     if (!['SUPER_ADMIN', 'KETUA_RT', 'BENDAHARA'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 });
     }
 
     const oldTransaction = await prisma.transaction.findUnique({
@@ -118,11 +118,11 @@ export async function DELETE(
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
     }
 
     if (!['SUPER_ADMIN', 'KETUA_RT'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: 'Akses ditolak' }, { status: 403 });
     }
 
     const transaction = await prisma.transaction.findUnique({

@@ -9,12 +9,12 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Only allow SUPER_ADMIN, KETUA_RT, and BENDAHARA
     if (!["SUPER_ADMIN", "KETUA_RT", "BENDAHARA"].includes(session.user.role)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     if (!period) {
       return NextResponse.json(
-        { error: "Period is required (format: YYYY-MM)" },
+        { error: "Periode harus diisi (format: YYYY-MM)" },
         { status: 400 },
       );
     }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const periodRegex = /^\d{4}-\d{2}$/;
     if (!periodRegex.test(period)) {
       return NextResponse.json(
-        { error: "Invalid period format. Use YYYY-MM" },
+        { error: "Format periode tidak valid. Gunakan YYYY-MM" },
         { status: 400 },
       );
     }

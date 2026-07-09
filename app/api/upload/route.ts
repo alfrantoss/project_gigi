@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -17,14 +17,14 @@ export async function POST(request: NextRequest) {
     const type = formData.get("type") as string; // 'ektp' or 'kartu_keluarga'
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return NextResponse.json({ error: "Tidak ada file yang diunggah" }, { status: 400 });
     }
 
     // Validate file type
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "File type not allowed. Only JPG, PNG, and PDF are accepted." },
+        { error: "Tipe file tidak diizinkan. Hanya JPG, PNG, dan PDF yang diterima." },
         { status: 400 }
       );
     }
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File size too large. Maximum 5MB allowed." },
+        { error: "Ukuran file terlalu besar. Maksimal 5MB yang diizinkan." },
         { status: 400 }
       );
     }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Failed to upload file" },
+      { error: "Gagal mengunggah file" },
       { status: 500 }
     );
   }

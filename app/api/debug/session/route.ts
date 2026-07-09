@@ -19,8 +19,8 @@ export async function GET(req: Request) {
     
     if (!session) {
       return NextResponse.json({ 
-        error: "No session found",
-        solution: "Please login again"
+        error: "Sesi tidak ditemukan",
+        solution: "Silakan masuk kembali"
       }, { status: 401 });
     }
 
@@ -76,7 +76,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Debug session error:", error);
     return NextResponse.json(
-      { error: "Debug failed", details: String(error) },
+      { error: "Debug gagal", details: String(error) },
       { status: 500 },
     );
   }

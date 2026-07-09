@@ -18,7 +18,7 @@ export async function GET() {
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       return NextResponse.json({
         success: false,
-        error: 'SMTP credentials not configured in .env',
+        error: 'Kredensial SMTP belum dikonfigurasi di .env',
         config,
       }, { status: 400 });
     }

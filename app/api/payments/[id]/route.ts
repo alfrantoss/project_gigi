@@ -12,7 +12,7 @@ export async function POST(
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const paymentId = params.id;
@@ -24,7 +24,7 @@ export async function POST(
       });
 
       if (!payment || payment.userId !== session.user.id) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
       }
     }
 
@@ -68,7 +68,7 @@ export async function PUT(
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const payment = await prisma.payment.findUnique({

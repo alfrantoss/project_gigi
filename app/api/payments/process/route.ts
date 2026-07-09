@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     if (!orderId) {
       return NextResponse.json(
-        { error: "Order ID not provided" },
+        { error: "Order ID tidak disediakan" },
         { status: 400 },
       );
     }
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // Check if payment belongs to current user (for WARGA role)
     if (session.user.role === "WARGA" && payment.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     // Update payment status based on transaction status

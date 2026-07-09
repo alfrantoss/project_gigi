@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
     }
 
     const body = await request.json();

@@ -10,7 +10,7 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const activity = await prisma.activity.findUnique({
@@ -24,7 +24,7 @@ export async function GET(
 
     if (!activity) {
       return NextResponse.json(
-        { error: "Activity not found" },
+        { error: "Kegiatan tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -33,7 +33,7 @@ export async function GET(
   } catch (error) {
     console.error("Get activity error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch activity" },
+      { error: "Gagal mengambil data kegiatan" },
       { status: 500 },
     );
   }
@@ -46,7 +46,7 @@ export async function PUT(
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Only creator or admin can update
@@ -56,7 +56,7 @@ export async function PUT(
 
     if (!activity) {
       return NextResponse.json(
-        { error: "Activity not found" },
+        { error: "Kegiatan tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -65,7 +65,7 @@ export async function PUT(
       activity.createdBy !== session.user?.id &&
       session.user?.role !== "SUPER_ADMIN"
     ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     const { title, description, type, location, startDate, endDate } =
@@ -105,7 +105,7 @@ export async function PUT(
   } catch (error) {
     console.error("Update activity error:", error);
     return NextResponse.json(
-      { error: "Failed to update activity" },
+      { error: "Gagal memperbarui kegiatan" },
       { status: 500 },
     );
   }
@@ -118,12 +118,12 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Only SUPER_ADMIN can delete
     if (session.user?.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     const activity = await prisma.activity.findUnique({
@@ -132,7 +132,7 @@ export async function DELETE(
 
     if (!activity) {
       return NextResponse.json(
-        { error: "Activity not found" },
+        { error: "Kegiatan tidak ditemukan" },
         { status: 404 },
       );
     }
@@ -153,11 +153,11 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json({ message: "Activity deleted successfully" });
+    return NextResponse.json({ message: "Kegiatan berhasil dihapus" });
   } catch (error) {
     console.error("Delete activity error:", error);
     return NextResponse.json(
-      { error: "Failed to delete activity" },
+      { error: "Gagal menghapus kegiatan" },
       { status: 500 },
     );
   }

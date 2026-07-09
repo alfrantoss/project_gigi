@@ -10,7 +10,7 @@ export async function PUT(
   try {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const { role, isActive } = await req.json();
@@ -19,7 +19,7 @@ export async function PUT(
     // Cannot change own role
     if (userId === session.user?.id) {
       return NextResponse.json(
-        { error: "Cannot change your own role" },
+        { error: "Tidak dapat mengubah peran Anda sendiri" },
         { status: 400 },
       );
     }
@@ -49,7 +49,7 @@ export async function PUT(
   } catch (error) {
     console.error("Update user role error:", error);
     return NextResponse.json(
-      { error: "Failed to update user" },
+      { error: "Gagal memperbarui pengguna" },
       { status: 500 },
     );
   }

@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Get query params
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     if (!notificationId) {
       return NextResponse.json(
-        { error: "Notification ID required" },
+        { error: "ID notifikasi diperlukan" },
         { status: 400 },
       );
     }
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     // Verify ownership
     if (notification.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     return NextResponse.json({

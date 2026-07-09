@@ -224,14 +224,14 @@ export default function SuratPage() {
                 Ajukan Surat
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
               <DialogHeader>
                 <DialogTitle>Ajukan Surat Baru</DialogTitle>
                 <DialogDescription>
                   Isi form di bawah untuk mengajukan permohonan surat
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto flex-1 pr-2">
                 <div className="space-y-2">
                   <Label>Jenis Surat</Label>
                   <Select

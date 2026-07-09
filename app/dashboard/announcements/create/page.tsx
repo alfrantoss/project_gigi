@@ -85,7 +85,7 @@ export default function CreateAnnouncementPage() {
         throw new Error(error.error || "Failed to create announcement");
       }
 
-      toast({ title: "Success", description: "Pengumuman berhasil dibuat" });
+      toast({ title: "Sukses", description: "Pengumuman berhasil dibuat" });
       router.push("/dashboard/announcements");
     } catch (error) {
       console.error("Create announcement error:", error);

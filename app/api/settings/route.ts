@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const settings = await prisma.setting.findMany();
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Settings fetch error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch settings" },
+      { error: "Gagal mengambil pengaturan" },
       { status: 500 },
     );
   }
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || session.user?.role !== "SUPER_ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const { key, value, description } = await req.json();
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Settings save error:", error);
     return NextResponse.json(
-      { error: "Failed to save settings" },
+      { error: "Gagal menyimpan pengaturan" },
       { status: 500 },
     );
   }

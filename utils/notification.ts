@@ -80,18 +80,45 @@ export async function sendPaymentReminder(userId: string) {
     }
 
     const totalDebt = user.payments.reduce((sum, p) => sum + p.amount, 0);
-    const message = `Halo ${user.name},\n\nAnda memiliki tagihan iuran RT yang belum dibayar:\n\nTotal: Rp ${totalDebt.toLocaleString("id-ID")}\nJumlah tagihan: ${user.payments.length}\n\nMohon segera melakukan pembayaran.\n\nTerima kasih.`;
+    
+    // Email notification
+    const emailMessage = `Halo ${user.name},\n\nAnda memiliki tagihan iuran RT yang belum dibayar:\n\nTotal: Rp ${totalDebt.toLocaleString("id-ID")}\nJumlah tagihan: ${user.payments.length}\n\nMohon segera melakukan pembayaran.\n\nTerima kasih.`;
 
     if (user.email) {
       await sendEmail(
         user.email,
         "Reminder Tagihan Iuran RT",
-        `<p>${message.replace(/\n/g, "<br>")}</p>`,
+        `<p>${emailMessage.replace(/\n/g, "<br>")}</p>`,
       );
     }
 
+    // WhatsApp notification with better formatting
     if (user.phone) {
-      await sendWhatsApp(user.phone, message);
+      const paymentList = user.payments.slice(0, 5).map((p, i) => 
+        `${i + 1}. ${p.period} - Rp ${p.amount.toLocaleString("id-ID")}`
+      ).join('\n');
+
+      const morePayments = user.payments.length > 5 
+        ? `\n... dan ${user.payments.length - 5} tagihan lainnya` 
+        : '';
+
+      const waMessage = `🔔 *Reminder Tagihan Iuran RT*
+
+Halo *${user.name}*,
+
+Anda memiliki *${user.payments.length} tagihan* yang belum dibayar:
+
+${paymentList}${morePayments}
+
+💰 *Total Tagihan:* Rp ${totalDebt.toLocaleString("id-ID")}
+
+Mohon segera melakukan pembayaran melalui sistem untuk menghindari denda keterlambatan.
+
+Terima kasih atas perhatiannya! 🙏
+
+_Sistem Manajemen Warga RT 001 RW 016_`;
+
+      await sendWhatsApp(user.phone, waMessage);
     }
 
     return { success: true };
@@ -105,6 +132,13 @@ export async function sendActivityReminder(activityId: string) {
   try {
     const activity = await prisma.activity.findUnique({
       where: { id: activityId },
+      include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (!activity) {
@@ -118,11 +152,54 @@ export async function sendActivityReminder(activityId: string) {
       },
     });
 
-    const message = `Reminder Kegiatan RT:\n\n${activity.title}\n${activity.description}\n\nWaktu: ${activity.startDate.toLocaleString("id-ID")}\nLokasi: ${activity.location || "TBA"}\n\nMohon kehadiran Bapak/Ibu.`;
+    const activityTypeMap: Record<string, string> = {
+      RAPAT: '👔 Rapat',
+      GOTONG_ROYONG: '🧹 Gotong Royong',
+      ARISAN: '🎲 Arisan',
+      PERAYAAN: '🎉 Perayaan',
+      LAINNYA: '📌 Kegiatan',
+    };
+
+    const typeLabel = activityTypeMap[activity.type] || '📌 Kegiatan';
+    const startDate = new Date(activity.startDate);
+    const endDate = activity.endDate ? new Date(activity.endDate) : null;
+
+    const message = `${typeLabel} *RT*
+
+*${activity.title}*
+
+${activity.description}
+
+📅 Waktu: ${startDate.toLocaleString("id-ID", {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}${endDate ? `\n⏰ Selesai: ${endDate.toLocaleString("id-ID", {
+      hour: '2-digit',
+      minute: '2-digit'
+    })}` : ''}
+📍 Lokasi: ${activity.location || 'Akan diinformasikan'}
+
+Mohon kehadiran Bapak/Ibu dalam kegiatan ini. 🙏
+
+_Sistem Manajemen Warga RT 001 RW 016_`;
+
+    let successCount = 0;
+    let failCount = 0;
 
     for (const user of users) {
       if (user.phone) {
-        await sendWhatsApp(user.phone, message);
+        const result = await sendWhatsApp(user.phone, message);
+        if (result.success) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+        // Add small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
@@ -131,7 +208,9 @@ export async function sendActivityReminder(activityId: string) {
       data: { reminderSent: true },
     });
 
-    return { success: true };
+    console.log(`Activity reminder sent: ${successCount} success, ${failCount} failed`);
+
+    return { success: true, successCount, failCount };
   } catch (error) {
     console.error("Failed to send activity reminder:", error);
     return { success: false, error };
@@ -142,6 +221,13 @@ export async function sendAnnouncementNotification(announcementId: string) {
   try {
     const announcement = await prisma.announcement.findUnique({
       where: { id: announcementId },
+      include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (!announcement) {
@@ -155,11 +241,39 @@ export async function sendAnnouncementNotification(announcementId: string) {
       },
     });
 
-    const message = `Pengumuman RT:\n\n${announcement.title}\n\n${announcement.content}`;
+    const priorityEmoji: Record<string, string> = {
+      urgent: '🚨',
+      high: '⚠️',
+      normal: '📢',
+      low: 'ℹ️',
+    };
+
+    const emoji = priorityEmoji[announcement.priority] || '📢';
+    
+    const message = `${emoji} *Pengumuman RT*
+
+*${announcement.title}*
+
+${announcement.content}
+
+📅 ${new Date().toLocaleString("id-ID")}
+👤 Dari: ${announcement.user.name}
+
+_Sistem Manajemen Warga RT 001 RW 016_`;
+
+    let successCount = 0;
+    let failCount = 0;
 
     for (const user of users) {
       if (user.phone) {
-        await sendWhatsApp(user.phone, message);
+        const result = await sendWhatsApp(user.phone, message);
+        if (result.success) {
+          successCount++;
+        } else {
+          failCount++;
+        }
+        // Add small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
@@ -168,7 +282,9 @@ export async function sendAnnouncementNotification(announcementId: string) {
       data: { notificationSent: true },
     });
 
-    return { success: true };
+    console.log(`Announcement notification sent: ${successCount} success, ${failCount} failed`);
+
+    return { success: true, successCount, failCount };
   } catch (error) {
     console.error("Failed to send announcement notification:", error);
     return { success: false, error };

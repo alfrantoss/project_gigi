@@ -152,7 +152,7 @@ export default function EditAnnouncementPage() {
       }
 
       toast({
-        title: "Success",
+        title: "Sukses",
         description: "Pengumuman berhasil diperbarui",
       });
       router.push("/dashboard/announcements");

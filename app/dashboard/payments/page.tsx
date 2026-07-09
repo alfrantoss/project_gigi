@@ -148,7 +148,7 @@ export default function PaymentsPage() {
                   }, 1000);
                 } else {
                   toast({
-                    title: "Warning",
+                    title: "Peringatan",
                     description:
                       "Pembayaran diterima tapi ada masalah update status",
                     variant: "destructive",
@@ -159,7 +159,7 @@ export default function PaymentsPage() {
               } catch (error: any) {
                 console.error("Process payment error:", error);
                 toast({
-                  title: "Warning",
+                  title: "Peringatan",
                   description:
                     "Pembayaran diterima tapi ada masalah update status",
                   variant: "destructive",
@@ -171,7 +171,7 @@ export default function PaymentsPage() {
             onPending: function (result: any) {
               console.log("Payment pending:", result);
               toast({
-                title: "Pending",
+                title: "Menunggu",
                 description: "Pembayaran sedang diproses",
               });
               setPayingId(null);
@@ -179,7 +179,7 @@ export default function PaymentsPage() {
             onError: function (result: any) {
               console.log("Payment error:", result);
               toast({
-                title: "Error",
+                title: "Gagal",
                 description: "Pembayaran gagal",
                 variant: "destructive",
               });

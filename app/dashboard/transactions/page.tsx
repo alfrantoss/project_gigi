@@ -106,15 +106,17 @@ export default function TransactionsPage() {
     });
 
     // Hitung summary untuk data yang difilter
+    const totalPemasukan = filteredTransactions
+      .filter((t) => t.type === 'PEMASUKAN')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const totalPengeluaran = filteredTransactions
+      .filter((t) => t.type === 'PENGELUARAN')
+      .reduce((sum, t) => sum + t.amount, 0);
     const filteredSummary = {
-      totalPemasukan: filteredTransactions
-        .filter((t) => t.type === 'PEMASUKAN')
-        .reduce((sum, t) => sum + t.amount, 0),
-      totalPengeluaran: filteredTransactions
-        .filter((t) => t.type === 'PENGELUARAN')
-        .reduce((sum, t) => sum + t.amount, 0),
+      totalPemasukan,
+      totalPengeluaran,
+      saldo: totalPemasukan - totalPengeluaran,
     };
-    filteredSummary.saldo = filteredSummary.totalPemasukan - filteredSummary.totalPengeluaran;
 
     const doc = new jsPDF();
     

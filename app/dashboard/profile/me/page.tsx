@@ -97,7 +97,7 @@ export default function ProfilePage() {
         // Jika session invalid, redirect ke logout
         if (errorData.code === "INVALID_SESSION" || response.status === 401) {
           toast({
-            title: "Session Expired",
+            title: "Sesi Berakhir",
             description: "Silakan login kembali",
             variant: "destructive",
           });
@@ -140,7 +140,7 @@ export default function ProfilePage() {
 
       if (!response.ok) throw new Error("Failed to update profile");
 
-      toast({ title: "Success", description: "Profil berhasil diperbarui" });
+      toast({ title: "Sukses", description: "Profil berhasil diperbarui" });
       setIsEditing(false);
       fetchProfile();
     } catch (error) {

@@ -60,7 +60,7 @@ export default function ActivitiesPage() {
 
       if (!response.ok) throw new Error("Failed to delete activity");
 
-      toast({ title: "Success", description: "Kegiatan berhasil dihapus" });
+      toast({ title: "Sukses", description: "Kegiatan berhasil dihapus" });
       fetchActivities();
     } catch (error) {
       console.error("Delete activity error:", error);

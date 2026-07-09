@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { createNotification } from "@/utils/notification";
+import { createNotification, sendWhatsApp } from "@/utils/notification";
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     if (!orderId) {
       return NextResponse.json(
-        { error: "Order ID not provided" },
+        { error: "Order ID tidak disediakan" },
         { status: 400 },
       );
     }
@@ -31,19 +31,19 @@ export async function POST(request: NextRequest) {
     });
 
     if (!payment) {
-      return NextResponse.json({ error: "Payment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
     }
 
     // Check if payment belongs to current user (for WARGA role)
     if (session.user.role === "WARGA" && payment.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     // Query Midtrans for transaction status
     const serverKey = process.env.MIDTRANS_SERVER_KEY;
     if (!serverKey) {
       return NextResponse.json(
-        { error: "Midtrans server key not configured" },
+        { error: "Server key Midtrans belum dikonfigurasi" },
         { status: 500 },
       );
     }
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({
             success: false,
             status: "FAILED",
-            message: "Payment marked as fraud",
+            message: "Pembayaran ditandai sebagai fraud / penipuan",
           });
         }
 
@@ -126,17 +126,37 @@ export async function POST(request: NextRequest) {
           payment.id,
         );
 
+        // Send WhatsApp notification
+        if (payment.user.phone) {
+          const waMessage = `✅ *Pembayaran Berhasil*
+
+Halo *${payment.user.name}*,
+
+Pembayaran iuran RT Anda telah berhasil dikonfirmasi:
+
+📅 Periode: ${payment.period}
+💰 Nominal: Rp ${payment.amount.toLocaleString("id-ID")}
+🕐 Waktu: ${new Date().toLocaleString("id-ID")}
+📝 ID Transaksi: ${midtransData.transaction_id}
+
+Terima kasih atas pembayaran tepat waktu Anda! 🙏
+
+_Sistem Manajemen Warga RT 001 RW 016_`;
+
+          await sendWhatsApp(payment.user.phone, waMessage);
+        }
+
         return NextResponse.json({
           success: true,
           status: "PAID",
-          message: "Payment status updated successfully",
+          message: "Status pembayaran berhasil diperbarui",
           payment: updatedPayment,
         });
       } else if (transactionStatus === "pending") {
         return NextResponse.json({
           success: false,
           status: "PENDING",
-          message: "Payment still pending",
+          message: "Pembayaran masih tertunda",
         });
       } else if (
         transactionStatus === "cancel" ||
@@ -154,14 +174,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: false,
           status: "FAILED",
-          message: "Payment failed or expired",
+          message: "Pembayaran gagal atau kedaluwarsa",
         });
       }
 
       return NextResponse.json({
         success: true,
         status: payment.status,
-        message: "Payment status checked",
+        message: "Status pembayaran berhasil diperiksa",
       });
     } catch (midtransError: any) {
       console.error("Midtrans status check error:", midtransError);
@@ -169,7 +189,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         status: payment.status,
-        message: "Could not verify with Midtrans, returning DB status",
+        message: "Tidak dapat memverifikasi dengan Midtrans, mengembalikan status dari database",
       });
     }
   } catch (error: any) {

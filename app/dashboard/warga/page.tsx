@@ -65,7 +65,7 @@ export default function WargaPage() {
     } catch (error: any) {
       console.error("Failed to fetch warga:", error);
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message || "Gagal mengambil data warga",
         variant: "destructive",
       });
@@ -125,7 +125,7 @@ export default function WargaPage() {
       fetchWarga();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message || "Gagal menghapus warga",
         variant: "destructive",
       });

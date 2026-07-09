@@ -129,7 +129,7 @@ export default function SettingsPage() {
 
       if (!response.ok) throw new Error("Failed to save setting");
 
-      toast({ title: "Success", description: "Pengaturan berhasil disimpan" });
+      toast({ title: "Sukses", description: "Pengaturan berhasil disimpan" });
       setEditingKey(null);
       fetchSettings();
     } catch (error) {
@@ -165,7 +165,7 @@ export default function SettingsPage() {
       if (!response.ok) throw new Error("Failed to add setting");
 
       toast({
-        title: "Success",
+        title: "Sukses",
         description: "Pengaturan baru berhasil ditambahkan",
       });
       setNewSetting({ key: "", value: "", description: "" });
@@ -197,7 +197,7 @@ export default function SettingsPage() {
 
       if (!response.ok) throw new Error("Failed to update user");
 
-      toast({ title: "Success", description: "User role berhasil diperbarui" });
+      toast({ title: "Sukses", description: "User role berhasil diperbarui" });
       fetchSettings();
     } catch (error) {
       console.error("Update user role error:", error);

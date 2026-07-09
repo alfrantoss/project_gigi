@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     // Only admin can view reports
@@ -16,7 +16,7 @@ export async function GET(req: Request) {
         session.user?.role || "",
       )
     ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Akses ditolak" }, { status: 403 });
     }
 
     const { startDate, endDate } = Object.fromEntries(
@@ -113,7 +113,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Reports error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch reports" },
+      { error: "Gagal mengambil laporan" },
       { status: 500 },
     );
   }

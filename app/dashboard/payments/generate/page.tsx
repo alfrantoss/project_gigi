@@ -35,7 +35,7 @@ export default function GeneratePaymentsPage() {
 
     if (!period) {
       toast({
-        title: "Error",
+        title: "Gagal",
         description: "Periode harus diisi",
         variant: "destructive",
       });
@@ -59,7 +59,7 @@ export default function GeneratePaymentsPage() {
 
       if (!response.ok) {
         toast({
-          title: "Error",
+          title: "Gagal",
           description: data.error || "Gagal membuat tagihan",
           variant: "destructive",
         });
@@ -89,7 +89,7 @@ export default function GeneratePaymentsPage() {
     } catch (error: any) {
       console.error("Generate error:", error);
       toast({
-        title: "Error",
+        title: "Gagal",
         description: error.message || "Gagal membuat tagihan",
         variant: "destructive",
       });
@@ -194,7 +194,7 @@ export default function GeneratePaymentsPage() {
                 </p>
                 {result.success && (
                   <p className="text-sm text-green-700 mt-1">
-                    Redirecting to payments page in 2 seconds...
+                    Mengalihkan ke halaman tagihan dalam 2 detik...
                   </p>
                 )}
               </div>

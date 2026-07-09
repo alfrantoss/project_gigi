@@ -10,13 +10,13 @@ export async function GET(req: Request) {
     console.log("Session:", JSON.stringify(session, null, 2));
     
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     if (!session.user?.id) {
       console.error("Session user ID is missing:", session);
       return NextResponse.json({ 
-        error: "Session invalid. Please logout and login again.",
+        error: "Sesi tidak valid. Silakan keluar dan masuk kembali.",
         code: "INVALID_SESSION"
       }, { status: 401 });
     }
@@ -52,7 +52,7 @@ export async function GET(req: Request) {
 
     if (!user) {
       console.error("User not found in database for ID:", session.user.id);
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
     }
 
     console.log("User found:", user.email, user.role);
@@ -60,7 +60,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Profile fetch error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch profile" },
+      { error: "Gagal mengambil data profil" },
       { status: 500 },
     );
   }
@@ -70,12 +70,12 @@ export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Autentikasi diperlukan" }, { status: 401 });
     }
 
     if (!session.user?.id) {
       console.error("Session user ID is missing in PUT:", session);
-      return NextResponse.json({ error: "Session user ID not found" }, { status: 401 });
+      return NextResponse.json({ error: "ID pengguna sesi tidak ditemukan" }, { status: 401 });
     }
 
     const { name, phone } = await req.json();
@@ -100,7 +100,7 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error("Profile update error:", error);
     return NextResponse.json(
-      { error: "Failed to update profile" },
+      { error: "Gagal memperbarui profil" },
       { status: 500 },
     );
   }

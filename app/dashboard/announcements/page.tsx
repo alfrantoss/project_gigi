@@ -98,7 +98,7 @@ export default function AnnouncementsPage() {
         throw new Error(error.error || "Failed to delete announcement");
       }
 
-      toast({ title: "Success", description: "Pengumuman berhasil dihapus" });
+      toast({ title: "Sukses", description: "Pengumuman berhasil dihapus" });
       setAnnouncements(announcements.filter((a) => a.id !== deleteDialog.id));
       setDeleteDialog({ open: false, id: "", title: "" });
     } catch (error) {

@@ -42,7 +42,7 @@ export default function PaymentProcessingPage() {
         } else {
           setStatus("failed");
           toast({
-            title: "Error",
+            title: "Gagal",
             description: "Gagal memproses pembayaran",
             variant: "destructive",
           });
@@ -50,7 +50,7 @@ export default function PaymentProcessingPage() {
       } catch (error) {
         setStatus("failed");
         toast({
-          title: "Error",
+          title: "Gagal",
           description: "Terjadi kesalahan saat memproses pembayaran",
           variant: "destructive",
         });

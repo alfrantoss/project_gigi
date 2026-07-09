@@ -98,7 +98,7 @@ export default function CreateActivityPage() {
         throw new Error(error.error || "Failed to create activity");
       }
 
-      toast({ title: "Success", description: "Kegiatan berhasil dibuat" });
+      toast({ title: "Sukses", description: "Kegiatan berhasil dibuat" });
       router.push("/dashboard/activities");
     } catch (error) {
       console.error("Create activity error:", error);

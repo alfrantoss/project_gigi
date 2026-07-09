@@ -42,7 +42,6 @@ export const validationMessages = {
  * Handler untuk custom validation message pada Input email
  */
 export const handleEmailValidation = (e: React.InvalidEvent<HTMLInputElement>) => {
-  e.preventDefault();
   const target = e.target;
   if (target.validity.valueMissing) {
     target.setCustomValidity(validationMessages.email.required);
@@ -55,7 +54,6 @@ export const handleEmailValidation = (e: React.InvalidEvent<HTMLInputElement>) =
  * Handler untuk custom validation message pada Input password
  */
 export const handlePasswordValidation = (e: React.InvalidEvent<HTMLInputElement>) => {
-  e.preventDefault();
   const target = e.target;
   if (target.validity.valueMissing) {
     target.setCustomValidity(validationMessages.password.required);
@@ -69,7 +67,6 @@ export const handlePasswordValidation = (e: React.InvalidEvent<HTMLInputElement>
  */
 export const handleTextValidation = (fieldName: string) => {
   return (e: React.InvalidEvent<HTMLInputElement>) => {
-    e.preventDefault();
     const target = e.target;
     const messages = validationMessages.text(fieldName);
     
@@ -88,7 +85,6 @@ export const handleTextValidation = (fieldName: string) => {
  */
 export const handleNumberValidation = (fieldName: string) => {
   return (e: React.InvalidEvent<HTMLInputElement>) => {
-    e.preventDefault();
     const target = e.target;
     const messages = validationMessages.number(fieldName);
     
@@ -109,7 +105,6 @@ export const handleNumberValidation = (fieldName: string) => {
  */
 export const handleSelectValidation = (fieldName: string) => {
   return (e: React.InvalidEvent<HTMLSelectElement>) => {
-    e.preventDefault();
     const target = e.target;
     const messages = validationMessages.select(fieldName);
     
@@ -124,7 +119,6 @@ export const handleSelectValidation = (fieldName: string) => {
  */
 export const handleTextareaValidation = (fieldName: string) => {
   return (e: React.InvalidEvent<HTMLTextAreaElement>) => {
-    e.preventDefault();
     const target = e.target;
     const messages = validationMessages.textarea(fieldName);
     
@@ -138,7 +132,6 @@ export const handleTextareaValidation = (fieldName: string) => {
  * Handler untuk custom validation message pada Input date
  */
 export const handleDateValidation = (e: React.InvalidEvent<HTMLInputElement>) => {
-  e.preventDefault();
   const target = e.target;
   if (target.validity.valueMissing) {
     target.setCustomValidity(validationMessages.date.required);
@@ -151,7 +144,6 @@ export const handleDateValidation = (e: React.InvalidEvent<HTMLInputElement>) =>
  * Handler untuk custom validation message pada Input file
  */
 export const handleFileValidation = (e: React.InvalidEvent<HTMLInputElement>) => {
-  e.preventDefault();
   const target = e.target;
   if (target.validity.valueMissing) {
     target.setCustomValidity(validationMessages.file.required);
