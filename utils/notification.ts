@@ -161,6 +161,7 @@ export async function sendActivityReminder(activityId: string) {
     });
 
     if (!activity) {
+      console.error("Activity not found:", activityId);
       return { success: false, error: "Activity not found" };
     }
 
@@ -168,8 +169,20 @@ export async function sendActivityReminder(activityId: string) {
       where: {
         role: "WARGA",
         isActive: true,
+        phone: {
+          not: null,
+        },
       },
     });
+
+    console.log(`=== Sending Activity Notification ===`);
+    console.log(`Activity: ${activity.title}`);
+    console.log(`Total active warga with phone: ${users.length}`);
+
+    if (users.length === 0) {
+      console.warn("No active warga with phone numbers found");
+      return { success: false, error: "No recipients found" };
+    }
 
     const activityTypeMap: Record<string, string> = {
       RAPAT: '👔 Rapat',
@@ -208,17 +221,23 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
 
     let successCount = 0;
     let failCount = 0;
+    const errors: string[] = [];
 
     for (const user of users) {
       if (user.phone) {
+        console.log(`Sending to ${user.name} (${user.phone})...`);
         const result = await sendWhatsApp(user.phone, message);
         if (result.success) {
           successCount++;
+          console.log(`✅ Sent to ${user.name}`);
         } else {
           failCount++;
+          const errorMsg = `❌ Failed to send to ${user.name}: ${result.error}`;
+          console.error(errorMsg);
+          errors.push(errorMsg);
         }
         // Add small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
@@ -227,9 +246,10 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
       data: { reminderSent: true },
     });
 
-    console.log(`Activity reminder sent: ${successCount} success, ${failCount} failed`);
+    console.log(`=== Activity Notification Complete ===`);
+    console.log(`Success: ${successCount}, Failed: ${failCount}`);
 
-    return { success: true, successCount, failCount };
+    return { success: true, successCount, failCount, errors };
   } catch (error) {
     console.error("Failed to send activity reminder:", error);
     return { success: false, error };
@@ -250,6 +270,7 @@ export async function sendAnnouncementNotification(announcementId: string) {
     });
 
     if (!announcement) {
+      console.error("Announcement not found:", announcementId);
       return { success: false, error: "Announcement not found" };
     }
 
@@ -257,8 +278,21 @@ export async function sendAnnouncementNotification(announcementId: string) {
       where: {
         role: "WARGA",
         isActive: true,
+        phone: {
+          not: null,
+        },
       },
     });
+
+    console.log(`=== Sending Announcement Notification ===`);
+    console.log(`Announcement: ${announcement.title}`);
+    console.log(`Total active warga: ${users.length}`);
+    console.log(`Users with phone numbers: ${users.filter(u => u.phone).length}`);
+
+    if (users.length === 0) {
+      console.warn("No active warga with phone numbers found");
+      return { success: false, error: "No recipients found" };
+    }
 
     const priorityEmoji: Record<string, string> = {
       urgent: '🚨',
@@ -282,17 +316,23 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
 
     let successCount = 0;
     let failCount = 0;
+    const errors: string[] = [];
 
     for (const user of users) {
       if (user.phone) {
+        console.log(`Sending to ${user.name} (${user.phone})...`);
         const result = await sendWhatsApp(user.phone, message);
         if (result.success) {
           successCount++;
+          console.log(`✅ Sent to ${user.name}`);
         } else {
           failCount++;
+          const errorMsg = `❌ Failed to send to ${user.name}: ${result.error}`;
+          console.error(errorMsg);
+          errors.push(errorMsg);
         }
         // Add small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
@@ -301,9 +341,13 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
       data: { notificationSent: true },
     });
 
-    console.log(`Announcement notification sent: ${successCount} success, ${failCount} failed`);
+    console.log(`=== Announcement Notification Complete ===`);
+    console.log(`Success: ${successCount}, Failed: ${failCount}`);
+    if (errors.length > 0) {
+      console.log('Errors:', errors);
+    }
 
-    return { success: true, successCount, failCount };
+    return { success: true, successCount, failCount, errors };
   } catch (error) {
     console.error("Failed to send announcement notification:", error);
     return { success: false, error };
