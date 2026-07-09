@@ -28,29 +28,48 @@ export async function sendEmail(to: string, subject: string, html: string) {
 
 export async function sendWhatsApp(phone: string, message: string) {
   try {
-    const setting = await prisma.setting.findUnique({
-      where: { key: "wa_api_key" },
-    });
+    // Try to get API key from environment variable first
+    let apiKey = process.env.WA_API_KEY;
 
-    if (!setting?.value) {
-      console.error("WhatsApp API key not configured");
+    // If not in env, try to get from database
+    if (!apiKey) {
+      const setting = await prisma.setting.findUnique({
+        where: { key: "wa_api_key" },
+      });
+      apiKey = setting?.value;
+    }
+
+    if (!apiKey) {
+      console.error("WhatsApp API key not configured in env or database");
       return { success: false, error: "API key not configured" };
     }
+
+    // Format phone number - remove leading 0 if exists
+    const formattedPhone = phone.startsWith('0') ? phone.substring(1) : phone;
+
+    console.log('Sending WhatsApp to:', formattedPhone);
 
     const response = await fetch("https://api.fonnte.com/send", {
       method: "POST",
       headers: {
-        Authorization: setting.value,
+        Authorization: apiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        target: phone,
+        target: formattedPhone,
         message: message,
         countryCode: "62",
       }),
     });
 
     const data = await response.json();
+    
+    if (!response.ok) {
+      console.error("WhatsApp API error:", data);
+      return { success: false, error: data.reason || "Failed to send WhatsApp" };
+    }
+
+    console.log("WhatsApp sent successfully:", data);
     return { success: true, data };
   } catch (error) {
     console.error("Failed to send WhatsApp:", error);
