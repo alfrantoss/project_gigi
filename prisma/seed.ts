@@ -199,8 +199,8 @@ async function main() {
         description: `Iuran kas RT bulan ${month} 2025`,
         status: status as any,
         paymentMethod: status === 'PAID' ? (Math.random() > 0.5 ? 'Transfer Bank' : 'Cash') : undefined,
-        paidAt: status === 'PAID' ? new Date(month.split('-')[0], parseInt(month.split('-')[1]) - 1, Math.floor(Math.random() * 8) + 1) : undefined,
-        dueDate: new Date(month.split('-')[0], parseInt(month.split('-')[1]) - 1, 10),
+        paidAt: status === 'PAID' ? new Date(parseInt(month.split('-')[0]), parseInt(month.split('-')[1]) - 1, Math.floor(Math.random() * 8) + 1) : undefined,
+        dueDate: new Date(parseInt(month.split('-')[0]), parseInt(month.split('-')[1]) - 1, 10),
       },
     });
   }

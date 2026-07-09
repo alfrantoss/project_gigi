@@ -125,6 +125,18 @@ export default function SuratPage() {
             tempatLahir: '',
             tanggalLahir: '',
             keperluan: '',
+            jenisKelamin: 'Laki-laki',
+            agama: 'Islam',
+            noTelp: '',
+            jenisUsaha: '',
+            lokasiUsaha: '',
+            statusHubungan: 'Kepala Keluarga',
+            namaBapak: '',
+            umurBapak: '',
+            pekerjaanBapak: '',
+            namaIbu: '',
+            umurIbu: '',
+            pekerjaanIbu: 'Ibu Rumah Tangga',
           },
         });
         fetchSurats();

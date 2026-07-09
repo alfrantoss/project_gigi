@@ -49,7 +49,7 @@ export async function POST(
 
     let pdfDoc;
     const pdfData = {
-      ...surat.data,
+      ...(surat.data as Record<string, any>),
       nama: surat.user.name,
       nik: surat.user.warga?.nik,
       alamat: surat.user.warga?.alamat,
