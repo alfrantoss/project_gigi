@@ -139,13 +139,12 @@ export default function PaymentsPage() {
                 if (processResponse.ok) {
                   toast({
                     title: "Sukses",
-                    description: "Pembayaran berhasil diproses",
+                    description: "Pembayaran berhasil diproses! Halaman akan dimuat ulang.",
                   });
-                  // Refresh payments list
+                  // Refresh page after 1.5 seconds
                   setTimeout(() => {
-                    fetchPayments();
-                    setPayingId(null);
-                  }, 1000);
+                    window.location.href = '/dashboard/payments';
+                  }, 1500);
                 } else {
                   toast({
                     title: "Peringatan",
@@ -172,15 +171,17 @@ export default function PaymentsPage() {
               console.log("Payment pending:", result);
               toast({
                 title: "Menunggu",
-                description: "Pembayaran sedang diproses",
+                description: "Pembayaran sedang diproses. Silakan cek status pembayaran Anda.",
               });
-              setPayingId(null);
+              setTimeout(() => {
+                window.location.href = '/dashboard/payments';
+              }, 2000);
             },
             onError: function (result: any) {
               console.log("Payment error:", result);
               toast({
                 title: "Gagal",
-                description: "Pembayaran gagal",
+                description: "Pembayaran gagal. Silakan coba lagi.",
                 variant: "destructive",
               });
               setPayingId(null);
@@ -210,12 +211,25 @@ export default function PaymentsPage() {
                     if (result.status === "PAID") {
                       toast({
                         title: "Sukses",
-                        description: "Pembayaran berhasil diproses",
+                        description: "Pembayaran berhasil diproses!",
                       });
+                      // Refresh page to show updated payment status
+                      setTimeout(() => {
+                        window.location.href = '/dashboard/payments';
+                      }, 1500);
+                    } else {
+                      // Just refresh to show current status
+                      fetchPayments();
+                      setPayingId(null);
                     }
+                  } else {
+                    fetchPayments();
+                    setPayingId(null);
                   }
                 } catch (error: any) {
                   console.error("Status check error:", error);
+                  fetchPayments();
+                  setPayingId(null);
                 }
 
                 // Refresh payments list

@@ -20,7 +20,12 @@ export async function createMidtransTransaction(paymentId: string) {
     }
 
     const orderId = `RT-${Date.now()}-${paymentId.substring(0, 8)}`;
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+    // Log untuk debugging
+    console.log('=== Midtrans Transaction Setup ===');
+    console.log('Base URL:', baseUrl);
+    console.log('Finish Redirect:', `${baseUrl}/dashboard/payments`);
 
     const payload = {
       transaction_details: {
@@ -40,9 +45,11 @@ export async function createMidtransTransaction(paymentId: string) {
           name: payment.description,
         },
       ],
-      finish_redirect_url: `${baseUrl}/dashboard/payments/finish`,
-      unfinish_redirect_url: `${baseUrl}/dashboard/payments`,
-      error_redirect_url: `${baseUrl}/dashboard/payments`,
+      callbacks: {
+        finish: `${baseUrl}/dashboard/payments`,
+        error: `${baseUrl}/dashboard/payments`,
+        pending: `${baseUrl}/dashboard/payments`,
+      },
     };
 
     const response = await fetch(
