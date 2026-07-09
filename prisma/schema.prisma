@@ -48,6 +48,11 @@ model User {
   phone         String?
   role          Role      @default(WARGA)
   isActive      Boolean   @default(true)
+  
+  // Reset Password Fields
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

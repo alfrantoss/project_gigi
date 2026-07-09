@@ -146,7 +146,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="warga@rt.com"
+                placeholder="Masukkan Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -167,6 +167,14 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1C2F57] focus:ring-2 focus:ring-[#1C2F57]/10 transition-colors"
               />
+              <div className="flex justify-end">
+                <a 
+                  href="/auth/forgot-password" 
+                  className="text-xs text-[#1C2F57] hover:text-[#1C2F57]/80 font-medium transition-colors"
+                >
+                  Lupa Password?
+                </a>
+              </div>
             </div>
 
             <Button 
@@ -180,7 +188,7 @@ export default function LoginPage() {
                   Memproses...
                 </>
               ) : (
-                'Masuk ke Dashboard'
+                'Masuk'
               )}
             </Button>
           </form>
