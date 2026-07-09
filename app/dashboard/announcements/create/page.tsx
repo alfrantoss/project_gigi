@@ -23,6 +23,11 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import {
+  handleTextValidation,
+  handleTextareaValidation,
+  resetValidation,
+} from '@/lib/form-validation';
 
 export default function CreateAnnouncementPage() {
   const { data: session, status } = useSession();
@@ -128,6 +133,8 @@ export default function CreateAnnouncementPage() {
                   setFormData({ ...formData, title: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Judul')}
+                onInput={resetValidation}
               />
             </div>
 
@@ -143,6 +150,8 @@ export default function CreateAnnouncementPage() {
                 }
                 rows={6}
                 required
+                onInvalid={handleTextareaValidation('Konten')}
+                onInput={resetValidation}
               />
             </div>
 

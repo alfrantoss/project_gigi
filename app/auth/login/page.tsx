@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { handleEmailValidation, handlePasswordValidation, resetValidation } from '@/lib/form-validation';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -152,6 +153,8 @@ export default function LoginPage() {
                 required
                 disabled={loading}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1C2F57] focus:ring-2 focus:ring-[#1C2F57]/10 transition-colors"
+                onInvalid={handleEmailValidation}
+                onInput={resetValidation}
               />
             </div>
 
@@ -166,6 +169,8 @@ export default function LoginPage() {
                 required
                 disabled={loading}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1C2F57] focus:ring-2 focus:ring-[#1C2F57]/10 transition-colors"
+                onInvalid={handlePasswordValidation}
+                onInput={resetValidation}
               />
               <div className="flex justify-end">
                 <a 

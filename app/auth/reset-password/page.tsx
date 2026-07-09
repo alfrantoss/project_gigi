@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { handlePasswordValidation, resetValidation } from '@/lib/form-validation';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -116,8 +117,11 @@ function ResetPasswordForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={8}
                     disabled={loading || !token}
                     className="w-full pl-11 pr-11 py-3 rounded-xl border border-slate-200 focus:border-[#1C2F57] focus:ring-2 focus:ring-[#1C2F57]/10 transition-colors"
+                    onInvalid={handlePasswordValidation}
+                    onInput={resetValidation}
                   />
                   <button
                     type="button"
@@ -142,8 +146,11 @@ function ResetPasswordForm() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    minLength={8}
                     disabled={loading || !token}
                     className="w-full pl-11 pr-11 py-3 rounded-xl border border-slate-200 focus:border-[#1C2F57] focus:ring-2 focus:ring-[#1C2F57]/10 transition-colors"
+                    onInvalid={handlePasswordValidation}
+                    onInput={resetValidation}
                   />
                   <button
                     type="button"

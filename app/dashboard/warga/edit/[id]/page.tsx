@@ -15,6 +15,13 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, Eye, EyeOff, Upload, FileText, X } from "lucide-react";
+import {
+  handleTextValidation,
+  handleEmailValidation,
+  handlePasswordValidation,
+  handleNumberValidation,
+  resetValidation,
+} from "@/lib/form-validation";
 
 export default function EditWargaPage() {
   const router = useRouter();
@@ -228,7 +235,8 @@ export default function EditWargaPage() {
           <CardHeader>
             <CardTitle>Informasi Akun</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nama Lengkap *</Label>
               <Input
@@ -238,6 +246,8 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Nama lengkap')}
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">
@@ -250,6 +260,8 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
+                onInvalid={handleEmailValidation}
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">
@@ -260,6 +272,7 @@ export default function EditWargaPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">
@@ -274,6 +287,9 @@ export default function EditWargaPage() {
                   }
                   placeholder="Kosongkan jika tidak ingin mengubah"
                   className="pr-10"
+                  minLength={8}
+                  onInvalid={handlePasswordValidation}
+                  onInput={resetValidation}
                 />
                 <button
                   type="button"
@@ -288,6 +304,7 @@ export default function EditWargaPage() {
                 </button>
               </div>
             </div>
+          </form>
           </CardContent>
         </Card>
 
@@ -305,6 +322,10 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, nik: e.target.value })
                 }
                 required
+                minLength={16}
+                maxLength={16}
+                onInvalid={handleTextValidation('NIK')}
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">
@@ -353,6 +374,8 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, nomorRumah: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Nomor rumah')}
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">
@@ -364,6 +387,8 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, alamat: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Alamat')}
+                onInput={resetValidation}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -376,6 +401,8 @@ export default function EditWargaPage() {
                     setFormData({ ...formData, rt: e.target.value })
                   }
                   required
+                  onInvalid={handleTextValidation('RT')}
+                  onInput={resetValidation}
                 />
               </div>
               <div className="space-y-2">
@@ -387,6 +414,8 @@ export default function EditWargaPage() {
                     setFormData({ ...formData, rw: e.target.value })
                   }
                   required
+                  onInvalid={handleTextValidation('RW')}
+                  onInput={resetValidation}
                 />
               </div>
             </div>
@@ -399,6 +428,8 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, kelurahan: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Kelurahan')}
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">
@@ -410,6 +441,8 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, kecamatan: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Kecamatan')}
+                onInput={resetValidation}
               />
             </div>
           </CardContent>
@@ -430,6 +463,9 @@ export default function EditWargaPage() {
                   setFormData({ ...formData, monthlyFee: e.target.value })
                 }
                 required
+                min={0}
+                onInvalid={handleNumberValidation('Iuran bulanan')}
+                onInput={resetValidation}
               />
             </div>
             <div className="space-y-2">

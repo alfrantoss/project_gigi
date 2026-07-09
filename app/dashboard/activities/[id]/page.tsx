@@ -23,6 +23,12 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import {
+  handleTextValidation,
+  handleTextareaValidation,
+  handleDateValidation,
+  resetValidation,
+} from '@/lib/form-validation';
 
 export default function EditActivityPage() {
   const { data: session, status } = useSession();
@@ -180,6 +186,8 @@ export default function EditActivityPage() {
                   setFormData({ ...formData, title: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Judul')}
+                onInput={resetValidation}
               />
             </div>
 
@@ -194,6 +202,7 @@ export default function EditActivityPage() {
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={4}
+                onInput={resetValidation}
               />
             </div>
 
@@ -231,6 +240,7 @@ export default function EditActivityPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, location: e.target.value })
                   }
+                  onInput={resetValidation}
                 />
               </div>
             </div>
@@ -247,6 +257,8 @@ export default function EditActivityPage() {
                     setFormData({ ...formData, startDate: e.target.value })
                   }
                   required
+                  onInvalid={handleDateValidation}
+                  onInput={resetValidation}
                 />
               </div>
 
@@ -259,6 +271,7 @@ export default function EditActivityPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, startTime: e.target.value })
                   }
+                  onInput={resetValidation}
                 />
               </div>
             </div>
@@ -273,6 +286,7 @@ export default function EditActivityPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, endDate: e.target.value })
                   }
+                  onInput={resetValidation}
                 />
               </div>
 
@@ -285,6 +299,7 @@ export default function EditActivityPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, endTime: e.target.value })
                   }
+                  onInput={resetValidation}
                 />
               </div>
             </div>

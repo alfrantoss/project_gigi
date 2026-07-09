@@ -23,6 +23,11 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import {
+  handleTextValidation,
+  handleTextareaValidation,
+  resetValidation,
+} from '@/lib/form-validation';
 
 interface Announcement {
   id: string;
@@ -195,6 +200,8 @@ export default function EditAnnouncementPage() {
                   setFormData({ ...formData, title: e.target.value })
                 }
                 required
+                onInvalid={handleTextValidation('Judul')}
+                onInput={resetValidation}
               />
             </div>
 
@@ -210,6 +217,8 @@ export default function EditAnnouncementPage() {
                 }
                 rows={6}
                 required
+                onInvalid={handleTextareaValidation('Konten')}
+                onInput={resetValidation}
               />
             </div>
 

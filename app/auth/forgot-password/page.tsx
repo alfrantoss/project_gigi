@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { handleEmailValidation, resetValidation } from '@/lib/form-validation';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -146,6 +147,8 @@ export default function ForgotPasswordPage() {
                     required
                     disabled={loading}
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-[#1C2F57] focus:ring-2 focus:ring-[#1C2F57]/10 transition-colors"
+                    onInvalid={handleEmailValidation}
+                    onInput={resetValidation}
                   />
                 </div>
               </div>

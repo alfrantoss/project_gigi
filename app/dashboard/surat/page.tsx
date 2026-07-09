@@ -35,6 +35,13 @@ import { Badge } from '@/components/ui/badge';
 import { FileText, Plus, Download, Check, X } from 'lucide-react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/id';
+import {
+  handleTextValidation,
+  handleTextareaValidation,
+  handleDateValidation,
+  handleNumberValidation,
+  resetValidation,
+} from '@/lib/form-validation';
 
 dayjs.locale('id');
 
@@ -252,6 +259,8 @@ export default function SuratPage() {
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="contoh: Permohonan Surat Domisili"
                     required
+                    onInvalid={handleTextValidation('Judul')}
+                    onInput={resetValidation}
                   />
                 </div>
 
@@ -263,6 +272,8 @@ export default function SuratPage() {
                     onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
                     placeholder="Untuk keperluan apa surat ini dibutuhkan"
                     required
+                    onInvalid={handleTextareaValidation('Keperluan')}
+                    onInput={resetValidation}
                   />
                 </div>
 
@@ -277,6 +288,7 @@ export default function SuratPage() {
                         data: { ...formData.data, tempatLahir: e.target.value },
                       })
                     }
+                    onInput={resetValidation}
                   />
                 </div>
 
@@ -292,6 +304,7 @@ export default function SuratPage() {
                         data: { ...formData.data, tanggalLahir: e.target.value },
                       })
                     }
+                    onInput={resetValidation}
                   />
                 </div>
 
@@ -310,6 +323,7 @@ export default function SuratPage() {
                           })
                         }
                         placeholder="Contoh: Toko Kelontong"
+                        onInput={resetValidation}
                       />
                     </div>
                     <div className="space-y-2">
@@ -324,6 +338,7 @@ export default function SuratPage() {
                           })
                         }
                         placeholder="08xx"
+                        onInput={resetValidation}
                       />
                     </div>
                   </>
@@ -346,6 +361,7 @@ export default function SuratPage() {
                             data: { ...formData.data, namaBapak: e.target.value },
                           })
                         }
+                        onInput={resetValidation}
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -361,6 +377,7 @@ export default function SuratPage() {
                               data: { ...formData.data, umurBapak: e.target.value },
                             })
                           }
+                          onInput={resetValidation}
                         />
                       </div>
                       <div className="space-y-2">
@@ -374,6 +391,7 @@ export default function SuratPage() {
                               data: { ...formData.data, pekerjaanBapak: e.target.value },
                             })
                           }
+                          onInput={resetValidation}
                         />
                       </div>
                     </div>
@@ -388,6 +406,7 @@ export default function SuratPage() {
                             data: { ...formData.data, namaIbu: e.target.value },
                           })
                         }
+                        onInput={resetValidation}
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -403,6 +422,7 @@ export default function SuratPage() {
                               data: { ...formData.data, umurIbu: e.target.value },
                             })
                           }
+                          onInput={resetValidation}
                         />
                       </div>
                       <div className="space-y-2">
@@ -416,6 +436,7 @@ export default function SuratPage() {
                               data: { ...formData.data, pekerjaanIbu: e.target.value },
                             })
                           }
+                          onInput={resetValidation}
                         />
                       </div>
                     </div>

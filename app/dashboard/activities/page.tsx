@@ -13,6 +13,7 @@ import {
   Edit2,
   Trash2,
   Loader2,
+  Search,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -37,6 +38,7 @@ export default function ActivitiesPage() {
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchActivities();
@@ -58,6 +60,19 @@ export default function ActivitiesPage() {
     session?.user.role || "",
   );
   const canDelete = session?.user.role === "SUPER_ADMIN";
+
+  // Filter activities based on search query
+  const filteredActivities = activities.filter((activity) => {
+    if (!searchQuery) return true;
+    
+    const query = searchQuery.toLowerCase();
+    return (
+      activity.title.toLowerCase().includes(query) ||
+      activity.description.toLowerCase().includes(query) ||
+      activity.type.toLowerCase().includes(query) ||
+      (activity.location && activity.location.toLowerCase().includes(query))
+    );
+  });
 
   const handleDelete = async (id: string) => {
     try {
@@ -107,8 +122,37 @@ export default function ActivitiesPage() {
         )}
       </div>
 
+      {/* Search Bar */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari kegiatan berdasarkan judul, deskripsi, tipe, atau lokasi..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          {searchQuery && (
+            <p className="text-sm text-slate-600 mt-2">
+              Ditemukan {filteredActivities.length} dari {activities.length} kegiatan
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {activities.map((activity) => (
+        {filteredActivities.map((activity) => (
           <Card key={activity.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -193,6 +237,23 @@ export default function ActivitiesPage() {
           </Card>
         ))}
       </div>
+
+      {filteredActivities.length === 0 && activities.length > 0 && (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Search className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">
+              Tidak ada hasil untuk "{searchQuery}"
+            </h3>
+            <p className="text-slate-600 mb-6">
+              Coba gunakan kata kunci lain atau hapus filter pencarian
+            </p>
+            <Button variant="outline" onClick={() => setSearchQuery("")}>
+              Hapus Pencarian
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {activities.length === 0 && (
         <Card>

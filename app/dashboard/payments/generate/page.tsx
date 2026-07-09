@@ -10,6 +10,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
+import {
+  handleDateValidation,
+  resetValidation,
+} from '@/lib/form-validation';
 
 dayjs.locale("id");
 
@@ -120,6 +124,8 @@ export default function GeneratePaymentsPage() {
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}
                 required
+                onInvalid={handleDateValidation}
+                onInput={resetValidation}
               />
               <p className="text-sm text-slate-500">
                 Jatuh tempo akan otomatis diset ke tanggal 10 bulan yang dipilih

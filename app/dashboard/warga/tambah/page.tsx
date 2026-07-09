@@ -15,6 +15,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Loader2, FileText, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  handleTextValidation,
+  handleEmailValidation,
+  handlePasswordValidation,
+  handleNumberValidation,
+  handleTextareaValidation,
+  resetValidation,
+} from "@/lib/form-validation";
 
 export default function TambahWargaPage() {
   const router = useRouter();
@@ -227,6 +235,8 @@ export default function TambahWargaPage() {
                       onChange={handleChange}
                       placeholder="Nama lengkap"
                       required
+                      onInvalid={handleTextValidation('Nama lengkap')}
+                      onInput={resetValidation}
                     />
                   </div>
                   <div className="space-y-2">
@@ -239,6 +249,8 @@ export default function TambahWargaPage() {
                       onChange={handleChange}
                       placeholder="email@example.com"
                       required
+                      onInvalid={handleEmailValidation}
+                      onInput={resetValidation}
                     />
                   </div>
                 </div>
@@ -252,6 +264,7 @@ export default function TambahWargaPage() {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="08123456789"
+                      onInput={resetValidation}
                     />
                   </div>
                   <div className="space-y-2">
@@ -263,6 +276,10 @@ export default function TambahWargaPage() {
                       onChange={handleChange}
                       placeholder="3201012345670001"
                       required
+                      minLength={16}
+                      maxLength={16}
+                      onInvalid={handleTextValidation('NIK')}
+                      onInput={resetValidation}
                     />
                   </div>
                 </div>
@@ -278,6 +295,9 @@ export default function TambahWargaPage() {
                       onChange={handleChange}
                       placeholder="Masukkan password"
                       required
+                      minLength={8}
+                      onInvalid={handlePasswordValidation}
+                      onInput={resetValidation}
                     />
                   </div>
                   <div className="space-y-2">
@@ -292,6 +312,9 @@ export default function TambahWargaPage() {
                       onChange={handleChange}
                       placeholder="Konfirmasi password"
                       required
+                      minLength={8}
+                      onInvalid={handlePasswordValidation}
+                      onInput={resetValidation}
                     />
                   </div>
                 </div>
@@ -392,6 +415,7 @@ export default function TambahWargaPage() {
                         value={formData.statusPerkawinan}
                         onChange={handleChange}
                         placeholder="Belum Menikah / Menikah / dst"
+                        onInput={resetValidation}
                       />
                     </div>
                     <div className="space-y-2">
@@ -402,6 +426,7 @@ export default function TambahWargaPage() {
                         value={formData.pekerjaan}
                         onChange={handleChange}
                         placeholder="Nama pekerjaan"
+                        onInput={resetValidation}
                       />
                     </div>
                   </div>
@@ -415,6 +440,9 @@ export default function TambahWargaPage() {
                       value={formData.monthlyFee}
                       onChange={handleChange}
                       placeholder="50000"
+                      min={0}
+                      onInvalid={handleNumberValidation('Iuran bulanan')}
+                      onInput={resetValidation}
                     />
                   </div>
                 </div>
