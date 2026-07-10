@@ -498,27 +498,73 @@ export default function EditWargaPage() {
             <div className="space-y-2">
               <Label htmlFor="ektp">E-KTP</Label>
               {formData.ektp ? (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-slate-50">
-                    <FileText className="h-5 w-5 text-slate-600" />
-                    <a
-                      href={formData.ektp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:underline flex-1 truncate"
-                    >
-                      {formData.ektp.split("/").pop()}
-                    </a>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveFile("ektp")}
-                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                <div className="space-y-3">
+                  {/* Preview Thumbnail */}
+                  <div className="relative aspect-video bg-slate-100 rounded-lg overflow-hidden group border">
+                    {formData.ektp.toLowerCase().endsWith('.pdf') ? (
+                      // PDF Thumbnail
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+                        <FileText className="w-16 h-16 text-red-600 mb-2" />
+                        <p className="text-xs text-red-700 font-medium">PDF Document</p>
+                      </div>
+                    ) : (
+                      // Image Thumbnail
+                      <img
+                        src={formData.ektp}
+                        alt="E-KTP Preview"
+                        className="w-full h-full object-contain bg-slate-50"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          if (e.currentTarget.parentElement) {
+                            e.currentTarget.parentElement.innerHTML = `
+                              <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-200">
+                                <svg class="w-12 h-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p class="text-xs text-slate-500 mt-2">Preview not available</p>
+                              </div>
+                            `;
+                          }
+                        }}
+                      />
+                    )}
+                    {/* Hover overlay dengan icon mata */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <a
+                        href={formData.ektp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex flex-col items-center gap-2 text-white hover:scale-110 transition-transform"
+                      >
+                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span className="text-sm font-medium">Lihat Dokumen</span>
+                      </a>
+                    </div>
                   </div>
+                  <a
+                    href={formData.ektp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                  >
+                    <span className="truncate">Buka di tab baru</span>
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRemoveFile("ektp")}
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Hapus Dokumen
+                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
@@ -543,27 +589,73 @@ export default function EditWargaPage() {
             <div className="space-y-2">
               <Label htmlFor="kartuKeluarga">Kartu Keluarga</Label>
               {formData.kartuKeluarga ? (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 p-3 border rounded-lg bg-slate-50">
-                    <FileText className="h-5 w-5 text-slate-600" />
-                    <a
-                      href={formData.kartuKeluarga}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:underline flex-1 truncate"
-                    >
-                      {formData.kartuKeluarga.split("/").pop()}
-                    </a>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveFile("kartuKeluarga")}
-                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                <div className="space-y-3">
+                  {/* Preview Thumbnail */}
+                  <div className="relative aspect-video bg-slate-100 rounded-lg overflow-hidden group border">
+                    {formData.kartuKeluarga.toLowerCase().endsWith('.pdf') ? (
+                      // PDF Thumbnail
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+                        <FileText className="w-16 h-16 text-red-600 mb-2" />
+                        <p className="text-xs text-red-700 font-medium">PDF Document</p>
+                      </div>
+                    ) : (
+                      // Image Thumbnail
+                      <img
+                        src={formData.kartuKeluarga}
+                        alt="Kartu Keluarga Preview"
+                        className="w-full h-full object-contain bg-slate-50"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          if (e.currentTarget.parentElement) {
+                            e.currentTarget.parentElement.innerHTML = `
+                              <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-200">
+                                <svg class="w-12 h-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p class="text-xs text-slate-500 mt-2">Preview not available</p>
+                              </div>
+                            `;
+                          }
+                        }}
+                      />
+                    )}
+                    {/* Hover overlay dengan icon mata */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <a
+                        href={formData.kartuKeluarga}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex flex-col items-center gap-2 text-white hover:scale-110 transition-transform"
+                      >
+                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span className="text-sm font-medium">Lihat Dokumen</span>
+                      </a>
+                    </div>
                   </div>
+                  <a
+                    href={formData.kartuKeluarga}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                  >
+                    <span className="truncate">Buka di tab baru</span>
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRemoveFile("kartuKeluarga")}
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Hapus Dokumen
+                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">

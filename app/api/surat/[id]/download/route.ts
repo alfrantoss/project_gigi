@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { generateSuratDomisili, generateSuratPengantar } from '@/utils/pdf-generator';
+import { 
+  generateSuratDomisili, 
+  generateSuratPengantar,
+  generateSuratIzinUsaha,
+  generateSuratKeteranganTidakMampu,
+  generateSuratLainnya
+} from '@/utils/pdf-generator';
 
 export async function GET(
   request: NextRequest,
@@ -66,21 +72,47 @@ export async function GET(
     };
 
     let doc;
-    if (surat.type === 'PENGANTAR') {
-      doc = generateSuratPengantar(pdfData);
-    } else {
-      // Kebanyakan surat menggunakan layout yang sama (seperti Domisili)
-      // hanya judulnya saja yang berbeda
-      doc = generateSuratDomisili(pdfData);
+    
+    // Generate PDF sesuai jenis surat
+    switch (surat.type) {
+      case 'PENGANTAR':
+        doc = generateSuratPengantar(pdfData);
+        break;
+      case 'IZIN_USAHA':
+        doc = generateSuratIzinUsaha(pdfData);
+        break;
+      case 'KETERANGAN_TIDAK_MAMPU':
+        doc = generateSuratKeteranganTidakMampu(pdfData);
+        break;
+      case 'LAINNYA':
+        doc = generateSuratLainnya(pdfData);
+        break;
+      case 'DOMISILI':
+      default:
+        doc = generateSuratDomisili(pdfData);
+        break;
     }
 
     // Generate PDF as buffer
     const pdfOutput = doc.output('arraybuffer');
 
+    // Format nama file yang lebih deskriptif
+    const namaPemohon = surat.user.name.replace(/\s+/g, '-').toLowerCase(); // Replace spasi dengan dash
+    const tanggal = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const jenisMap: Record<string, string> = {
+      DOMISILI: 'domisili',
+      PENGANTAR: 'pengantar',
+      IZIN_USAHA: 'izin-usaha',
+      KETERANGAN_TIDAK_MAMPU: 'sktm',
+      LAINNYA: 'lainnya',
+    };
+    const jenisSurat = jenisMap[surat.type] || 'surat';
+    const filename = `${jenisSurat}-${namaPemohon}-${tanggal}.pdf`;
+
     return new NextResponse(pdfOutput, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="surat-${surat.type.toLowerCase()}-${surat.id}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
       },
     });
   } catch (error) {

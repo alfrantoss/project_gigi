@@ -16,6 +16,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:cleanup": "tsx prisma/cleanup-dummy-data.ts",
+    "prisma:cleanup-safe": "tsx prisma/cleanup-dummy-data-safe.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

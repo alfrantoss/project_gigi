@@ -75,8 +75,6 @@ export default function SuratPage() {
     title: '',
     purpose: '',
     data: {
-      tempatLahir: '',
-      tanggalLahir: '',
       keperluan: '',
       jenisKelamin: 'Laki-laki',
       agama: 'Islam',
@@ -89,7 +87,11 @@ export default function SuratPage() {
       pekerjaanBapak: '',
       namaIbu: '',
       umurIbu: '',
-      pekerjaanIbu: 'Ibu Rumah Tangga',
+      pekerjaanIbu: '',
+      namaAnak: '',
+      umurAnak: '',
+      pendidikanAnak: '',
+      statusAnak: '',
     },
   });
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -129,8 +131,6 @@ export default function SuratPage() {
           title: '',
           purpose: '',
           data: {
-            tempatLahir: '',
-            tanggalLahir: '',
             keperluan: '',
             jenisKelamin: 'Laki-laki',
             agama: 'Islam',
@@ -143,7 +143,11 @@ export default function SuratPage() {
             pekerjaanBapak: '',
             namaIbu: '',
             umurIbu: '',
-            pekerjaanIbu: 'Ibu Rumah Tangga',
+            pekerjaanIbu: '',
+            namaAnak: '',
+            umurAnak: '',
+            pendidikanAnak: '',
+            statusAnak: '',
           },
         });
         fetchSurats();
@@ -277,37 +281,6 @@ export default function SuratPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="tempatLahir">Tempat Lahir</Label>
-                  <Input
-                    id="tempatLahir"
-                    value={formData.data.tempatLahir}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        data: { ...formData.data, tempatLahir: e.target.value },
-                      })
-                    }
-                    onInput={resetValidation}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="tanggalLahir">Tanggal Lahir</Label>
-                  <Input
-                    id="tanggalLahir"
-                    type="date"
-                    value={formData.data.tanggalLahir}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        data: { ...formData.data, tanggalLahir: e.target.value },
-                      })
-                    }
-                    onInput={resetValidation}
-                  />
-                </div>
-
                 {/* Field khusus untuk Surat Izin Usaha */}
                 {formData.type === 'IZIN_USAHA' && (
                   <>
@@ -347,6 +320,73 @@ export default function SuratPage() {
                 {/* Field khusus untuk SKTM */}
                 {formData.type === 'KETERANGAN_TIDAK_MAMPU' && (
                   <>
+                    <div className="pt-2 border-t">
+                      <Label className="font-semibold">Data Anak</Label>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="namaAnak">Nama Anak</Label>
+                      <Input
+                        id="namaAnak"
+                        value={formData.data.namaAnak}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            data: { ...formData.data, namaAnak: e.target.value },
+                          })
+                        }
+                        placeholder="Nama lengkap anak"
+                        onInput={resetValidation}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="umurAnak">Umur Anak</Label>
+                        <Input
+                          id="umurAnak"
+                          type="number"
+                          value={formData.data.umurAnak}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              data: { ...formData.data, umurAnak: e.target.value },
+                            })
+                          }
+                          placeholder="Tahun"
+                          onInput={resetValidation}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="pendidikanAnak">Pendidikan</Label>
+                        <Input
+                          id="pendidikanAnak"
+                          value={formData.data.pendidikanAnak}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              data: { ...formData.data, pendidikanAnak: e.target.value },
+                            })
+                          }
+                          placeholder="SD/SMP/SMA/Kuliah"
+                          onInput={resetValidation}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="statusAnak">Status/Keterangan</Label>
+                      <Input
+                        id="statusAnak"
+                        value={formData.data.statusAnak}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            data: { ...formData.data, statusAnak: e.target.value },
+                          })
+                        }
+                        placeholder="Contoh: Pelajar, Mahasiswa"
+                        onInput={resetValidation}
+                      />
+                    </div>
+                    
                     <div className="pt-2 border-t">
                       <Label className="font-semibold">Data Orang Tua / Wali</Label>
                     </div>
@@ -436,6 +476,7 @@ export default function SuratPage() {
                               data: { ...formData.data, pekerjaanIbu: e.target.value },
                             })
                           }
+                          placeholder="Contoh: Ibu Rumah Tangga"
                           onInput={resetValidation}
                         />
                       </div>

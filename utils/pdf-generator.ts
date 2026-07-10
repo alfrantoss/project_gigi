@@ -36,13 +36,14 @@ function addHeader(doc: jsPDF, title: string, nomorSurat: string) {
   // Header - RT Info (centered)
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('PEMERINTAH KABUPATEN/KOTA', 105, 15, { align: 'center' });
-  doc.text('KECAMATAN [NAMA KECAMATAN]', 105, 22, { align: 'center' });
-  doc.text('RT/RW [NOMOR RT/RW]', 105, 29, { align: 'center' });
+  doc.text('PEMERINTAH KABUPATEN BEKASI', 105, 15, { align: 'center' });
+  doc.text('KECAMATAN CIBITUNG', 105, 22, { align: 'center' });
+  doc.text('KELURAHAN WANAJAYA', 105, 29, { align: 'center' });
+  doc.text('RT/RW 001/016', 105, 36, { align: 'center' });
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('Alamat: [Alamat RT Lengkap]', 105, 35, { align: 'center' });
+  doc.text('Jl. Raya Wanajaya, Cibitung, Bekasi', 105, 42, { align: 'center' });
   
   // Optional: Add logo on right side too (mirror)
   if (logo) {
@@ -55,9 +56,9 @@ function addHeader(doc: jsPDF, title: string, nomorSurat: string) {
   
   // Line separator
   doc.setLineWidth(0.5);
-  doc.line(20, 40, 190, 40);
+  doc.line(20, 47, 190, 47);
   doc.setLineWidth(0.2);
-  doc.line(20, 41, 190, 41);
+  doc.line(20, 48, 190, 48);
 }
 
 // Helper function to add footer with signature
@@ -82,18 +83,18 @@ export function generateSuratDomisili(data: any) {
   // Title
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('SURAT KETERANGAN DOMISILI', 105, 50, { align: 'center' });
+  doc.text('SURAT KETERANGAN DOMISILI', 105, 57, { align: 'center' });
   
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Nomor: ${nomorSurat}`, 105, 57, { align: 'center' });
+  doc.text(`Nomor: ${nomorSurat}`, 105, 64, { align: 'center' });
   
   doc.setLineWidth(0.3);
-  doc.line(80, 59, 130, 59);
+  doc.line(80, 66, 130, 66);
 
   // Content
   doc.setFontSize(11);
-  let y = 70;
+  let y = 77;
   
   doc.text('Yang bertanda tangan di bawah ini, Kepala RT/RW setempat, dengan ini', 20, y);
   doc.text('menerangkan bahwa:', 20, y + 7);
@@ -103,7 +104,6 @@ export function generateSuratDomisili(data: any) {
   // Data table
   const dataRows = [
     ['Nama', ': ' + (data.nama || '-')],
-    ['Tempat / Tgl Lahir', `: ${data.tempatLahir || '-'}, ${data.tanggalLahir ? dayjs(data.tanggalLahir).format('DD MMMM YYYY') : '-'}`],
     ['Jenis Kelamin', ': ' + (data.jenisKelamin || 'Laki-laki')],
     ['Kewarganegaraan', ': Indonesia'],
     ['Pekerjaan', ': ' + (data.pekerjaan || '-')],
@@ -153,18 +153,18 @@ export function generateSuratPengantar(data: any) {
   // Title
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('SURAT PENGANTAR', 105, 50, { align: 'center' });
+  doc.text('SURAT PENGANTAR', 105, 57, { align: 'center' });
   
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Nomor: ${nomorSurat}`, 105, 57, { align: 'center' });
+  doc.text(`Nomor: ${nomorSurat}`, 105, 64, { align: 'center' });
   
   doc.setLineWidth(0.3);
-  doc.line(85, 59, 125, 59);
+  doc.line(85, 66, 125, 66);
 
   // Content
   doc.setFontSize(11);
-  let y = 70;
+  let y = 77;
   
   doc.text('Yang bertanda tangan di bawah ini:', 20, y);
   
@@ -182,7 +182,6 @@ export function generateSuratPengantar(data: any) {
   y += 10;
   const dataRows = [
     ['Nama', ': ' + (data.nama || '-')],
-    ['Tempat / Tgl Lahir', `: ${data.tempatLahir || '-'}, ${data.tanggalLahir ? dayjs(data.tanggalLahir).format('DD MMMM YYYY') : '-'}`],
     ['NIK', ': ' + (data.nik || '-')],
     ['Pekerjaan', ': ' + (data.pekerjaan || '-')],
     ['Alamat', `: ${data.alamat || '-'}`],
@@ -225,18 +224,18 @@ export function generateSuratIzinUsaha(data: any) {
   // Title
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('SURAT KETERANGAN USAHA', 105, 50, { align: 'center' });
+  doc.text('SURAT KETERANGAN USAHA', 105, 57, { align: 'center' });
   
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Nomor: ${nomorSurat}`, 105, 57, { align: 'center' });
+  doc.text(`Nomor: ${nomorSurat}`, 105, 64, { align: 'center' });
   
   doc.setLineWidth(0.3);
-  doc.line(80, 59, 130, 59);
+  doc.line(80, 66, 130, 66);
 
   // Content
   doc.setFontSize(11);
-  let y = 70;
+  let y = 77;
   
   doc.text('Yang bertanda tangan di bawah ini, Ketua RT setempat, dengan ini', 20, y);
   doc.text('menerangkan bahwa:', 20, y + 7);
@@ -245,7 +244,6 @@ export function generateSuratIzinUsaha(data: any) {
   
   const dataRows = [
     ['Nama', ': ' + (data.nama || '-')],
-    ['Tempat / Tgl Lahir', `: ${data.tempatLahir || '-'}, ${data.tanggalLahir ? dayjs(data.tanggalLahir).format('DD MMMM YYYY') : '-'}`],
     ['Jenis Kelamin', ': ' + (data.jenisKelamin || 'Laki-laki')],
     ['Agama', ': ' + (data.agama || 'Islam')],
     ['Pekerjaan', ': ' + (data.pekerjaan || 'Wiraswasta')],
@@ -292,40 +290,50 @@ export function generateSuratKeteranganTidakMampu(data: any) {
   // Title
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('SURAT KETERANGAN TIDAK MAMPU', 105, 50, { align: 'center' });
+  doc.text('SURAT KETERANGAN TIDAK MAMPU', 105, 57, { align: 'center' });
   
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Nomor: ${nomorSurat}`, 105, 57, { align: 'center' });
+  doc.text(`Nomor: ${nomorSurat}`, 105, 64, { align: 'center' });
   
   doc.setLineWidth(0.3);
-  doc.line(75, 59, 135, 59);
+  doc.line(75, 66, 135, 66);
 
   // Content
   doc.setFontSize(11);
-  let y = 70;
+  let y = 77;
   
   doc.text('Yang bertanda tangan di bawah ini, Ketua RT/RW setempat, menerangkan', 20, y);
   doc.text('dengan sebenarnya bahwa:', 20, y + 7);
   
   y += 20;
   
-  const dataRows = [
-    ['Nama', ': ' + (data.nama || '-')],
-    ['Tempat / Tanggal Lahir', `: ${data.tempatLahir || '-'}, ${data.tanggalLahir ? dayjs(data.tanggalLahir).format('DD MMMM YYYY') : '-'}`],
-    ['Jenis Kelamin', ': ' + (data.jenisKelamin || 'Laki-laki')],
-    ['Status/Hubungan', ': ' + (data.statusHubungan || 'Kepala Keluarga')],
-    ['Alamat', `: ${data.alamat || '-'}`],
+  // Data Anak ditampilkan lebih dulu
+  const namaAnak = data.namaAnak || '-';
+  const umurAnak = data.umurAnak || '-';
+  const pendidikanAnak = data.pendidikanAnak || '-';
+  const statusAnak = data.statusAnak || 'Pelajar';
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text('Data Anak:', 20, y);
+  doc.setFont('helvetica', 'normal');
+  y += 7;
+  
+  const dataRowsAnak = [
+    ['Nama', `: ${namaAnak}`],
+    ['Umur', `: ${umurAnak} Tahun`],
+    ['Pendidikan', `: ${pendidikanAnak}`],
+    ['Status', `: ${statusAnak}`],
   ];
   
-  dataRows.forEach(([label, value]) => {
+  dataRowsAnak.forEach(([label, value]) => {
     doc.text(label, 30, y);
-    doc.text(value, 75, y);
+    doc.text(value, 70, y);
     y += 6;
   });
   
   y += 8;
-  doc.text('Adalah benar - benar tidak dari orang tua:', 20, y);
+  doc.text('Adalah anak dari orang tua:', 20, y);
   
   y += 10;
   
@@ -368,7 +376,7 @@ export function generateSuratKeteranganTidakMampu(data: any) {
   
   y += 10;
   doc.text('Sesuai pengamatan kami, keluarga tersebut tidak dapat memenuhi', 20, y);
-  doc.text('kehidupan sehari-hari. Oleh karena itu, dimohon bantuan dari pihak terkait.', 20, y + 6);
+  doc.text('kehidupan sehari-hari dengan baik.', 20, y + 6);
   
   y += 15;
   const keperluan = data.keperluan || data.purpose || 'mendapatkan bantuan';
@@ -390,18 +398,18 @@ export function generateSuratLainnya(data: any) {
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   const title = (data.title || 'SURAT KETERANGAN').toUpperCase();
-  doc.text(title, 105, 50, { align: 'center' });
+  doc.text(title, 105, 57, { align: 'center' });
   
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Nomor: ${nomorSurat}`, 105, 57, { align: 'center' });
+  doc.text(`Nomor: ${nomorSurat}`, 105, 64, { align: 'center' });
   
   doc.setLineWidth(0.3);
-  doc.line(80, 59, 130, 59);
+  doc.line(80, 66, 130, 66);
 
   // Content
   doc.setFontSize(11);
-  let y = 70;
+  let y = 77;
   
   doc.text('Yang bertanda tangan di bawah ini:', 20, y);
   
