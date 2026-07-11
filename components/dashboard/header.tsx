@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bell, Menu, Check, Clock, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ const roleLabels = {
 };
 
 export function Header({ user, onMenuClick }: HeaderProps) {
+  const router = useRouter();
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
@@ -105,6 +107,40 @@ export function Header({ user, onMenuClick }: HeaderProps) {
     } catch (error) {
       console.error("Failed to mark all as read:", error);
     }
+  };
+
+  const getNotificationUrl = (notif: Notification): string => {
+    // Redirect berdasarkan tipe notifikasi
+    switch (notif.type) {
+      case 'PAYMENT_SUCCESS':
+      case 'PAYMENT_PENDING':
+      case 'PAYMENT_REMINDER':
+        return '/dashboard/payments';
+      
+      case 'SURAT_SUBMITTED':
+      case 'SURAT_APPROVED':
+      case 'SURAT_REJECTED':
+        return '/dashboard/surat';
+      
+      case 'ANNOUNCEMENT':
+        return '/dashboard/announcements';
+      
+      case 'ACTIVITY':
+        return '/dashboard/activities';
+      
+      default:
+        return '/dashboard';
+    }
+  };
+
+  const handleNotificationClick = async (notif: Notification) => {
+    // Mark as read jika belum dibaca
+    if (!notif.isRead) {
+      await markAsRead(notif.id);
+    }
+    // Redirect ke halaman terkait
+    const url = getNotificationUrl(notif);
+    router.push(url);
   };
 
   return (
@@ -169,7 +205,7 @@ export function Header({ user, onMenuClick }: HeaderProps) {
                   <DropdownMenuItem
                     key={notif.id}
                     className="flex items-start gap-3 p-4 cursor-pointer hover:bg-slate-50 border-b"
-                    onClick={() => !notif.isRead && markAsRead(notif.id)}
+                    onClick={() => handleNotificationClick(notif)}
                   >
                     <div className="flex-1 min-w-0">
                       <p

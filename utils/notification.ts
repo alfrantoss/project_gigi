@@ -140,6 +140,23 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
       await sendWhatsApp(user.phone, waMessage);
     }
 
+    // Create in-app notification
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: user.id,
+          title: '🔔 Reminder Tagihan Iuran RT',
+          message: `Anda memiliki ${user.payments.length} tagihan yang belum dibayar dengan total Rp ${totalDebt.toLocaleString("id-ID")}. Mohon segera melakukan pembayaran.`,
+          type: 'PAYMENT_REMINDER',
+          relatedId: user.payments[0]?.id, // Link to first payment
+          isRead: false,
+        },
+      });
+      console.log(`📱 In-app payment reminder created for ${user.name}`);
+    } catch (notifError) {
+      console.error(`Failed to create in-app notification for ${user.name}:`, notifError);
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Failed to send payment reminder:", error);
@@ -224,20 +241,106 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
     const errors: string[] = [];
 
     for (const user of users) {
+      // Send WhatsApp if phone number exists
       if (user.phone) {
-        console.log(`Sending to ${user.name} (${user.phone})...`);
+        console.log(`Sending WhatsApp to ${user.name} (${user.phone})...`);
         const result = await sendWhatsApp(user.phone, message);
         if (result.success) {
           successCount++;
-          console.log(`✅ Sent to ${user.name}`);
+          console.log(`✅ WhatsApp sent to ${user.name}`);
         } else {
           failCount++;
-          const errorMsg = `❌ Failed to send to ${user.name}: ${result.error}`;
+          const errorMsg = `❌ Failed to send WhatsApp to ${user.name}: ${result.error}`;
           console.error(errorMsg);
           errors.push(errorMsg);
         }
         // Add small delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // Send Email if email exists
+      if (user.email) {
+        console.log(`Sending Email to ${user.name} (${user.email})...`);
+        const emailHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #059669; padding: 20px; text-align: center;">
+              <h1 style="color: white; margin: 0;">${typeLabel} RT 001/016</h1>
+            </div>
+            <div style="padding: 30px; background-color: #f9fafb;">
+              <h2 style="color: #1f2937; margin-top: 0;">${activity.title}</h2>
+              <div style="background-color: white; padding: 20px; border-radius: 8px; border-left: 4px solid #059669;">
+                <p style="color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${activity.description}</p>
+              </div>
+              <div style="margin-top: 20px; padding: 20px; background-color: #d1fae5; border-radius: 8px;">
+                <p style="margin: 0; color: #065f46; line-height: 1.8;">
+                  📅 <strong>Waktu:</strong> ${startDate.toLocaleString("id-ID", {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}<br>
+                  ${endDate ? `⏰ <strong>Selesai:</strong> ${endDate.toLocaleString("id-ID", {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}<br>` : ''}
+                  📍 <strong>Lokasi:</strong> ${activity.location || 'Akan diinformasikan'}
+                </p>
+              </div>
+              <div style="margin-top: 20px; padding: 15px; background-color: #fef3c7; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; color: #92400e;">
+                  🙏 Mohon kehadiran Bapak/Ibu dalam kegiatan ini.
+                </p>
+              </div>
+            </div>
+            <div style="padding: 20px; text-align: center; background-color: #e5e7eb; color: #6b7280; font-size: 12px;">
+              <p style="margin: 0;">Sistem Manajemen Warga RT 001 RW 016</p>
+            </div>
+          </div>
+        `;
+        
+        const emailResult = await sendEmail(
+          user.email,
+          `${typeLabel} - ${activity.title}`,
+          emailHtml
+        );
+        
+        if (emailResult.success) {
+          console.log(`✅ Email sent to ${user.name}`);
+        } else {
+          console.error(`❌ Failed to send email to ${user.name}`);
+        }
+      }
+    }
+
+    // Create in-app notifications for all users
+    console.log('Creating in-app notifications...');
+    // Get all active warga (not only those with phone)
+    const allActiveWarga = await prisma.user.findMany({
+      where: {
+        role: "WARGA",
+        isActive: true,
+      },
+    });
+    
+    for (const user of allActiveWarga) {
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: user.id,
+            title: `${typeLabel} - ${activity.title}`,
+            message: activity.description.length > 150 
+              ? activity.description.substring(0, 150) + '...' 
+              : activity.description,
+            type: 'ACTIVITY',
+            relatedId: activityId,
+            isRead: false,
+          },
+        });
+        console.log(`📱 In-app notification created for ${user.name}`);
+      } catch (notifError) {
+        console.error(`Failed to create in-app notification for ${user.name}:`, notifError);
       }
     }
 
@@ -319,20 +422,79 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
     const errors: string[] = [];
 
     for (const user of users) {
+      // Send WhatsApp if phone number exists
       if (user.phone) {
-        console.log(`Sending to ${user.name} (${user.phone})...`);
+        console.log(`Sending WhatsApp to ${user.name} (${user.phone})...`);
         const result = await sendWhatsApp(user.phone, message);
         if (result.success) {
           successCount++;
-          console.log(`✅ Sent to ${user.name}`);
+          console.log(`✅ WhatsApp sent to ${user.name}`);
         } else {
           failCount++;
-          const errorMsg = `❌ Failed to send to ${user.name}: ${result.error}`;
+          const errorMsg = `❌ Failed to send WhatsApp to ${user.name}: ${result.error}`;
           console.error(errorMsg);
           errors.push(errorMsg);
         }
         // Add small delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // Send Email if email exists
+      if (user.email) {
+        console.log(`Sending Email to ${user.name} (${user.email})...`);
+        const emailHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #1e40af; padding: 20px; text-align: center;">
+              <h1 style="color: white; margin: 0;">${emoji} Pengumuman RT 001/016</h1>
+            </div>
+            <div style="padding: 30px; background-color: #f9fafb;">
+              <h2 style="color: #1f2937; margin-top: 0;">${announcement.title}</h2>
+              <div style="background-color: white; padding: 20px; border-radius: 8px; border-left: 4px solid #1e40af;">
+                <p style="color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${announcement.content}</p>
+              </div>
+              <div style="margin-top: 20px; padding: 15px; background-color: #e0e7ff; border-radius: 8px;">
+                <p style="margin: 0; color: #3730a3; font-size: 14px;">
+                  📅 ${new Date().toLocaleString("id-ID")}<br>
+                  👤 Dari: ${announcement.user.name}
+                </p>
+              </div>
+            </div>
+            <div style="padding: 20px; text-align: center; background-color: #e5e7eb; color: #6b7280; font-size: 12px;">
+              <p style="margin: 0;">Sistem Manajemen Warga RT 001 RW 016</p>
+            </div>
+          </div>
+        `;
+        
+        const emailResult = await sendEmail(
+          user.email,
+          `${emoji} ${announcement.title}`,
+          emailHtml
+        );
+        
+        if (emailResult.success) {
+          console.log(`✅ Email sent to ${user.name}`);
+        } else {
+          console.error(`❌ Failed to send email to ${user.name}`);
+        }
+      }
+      
+      // Create in-app notification for all users (whether WhatsApp/Email sent or not)
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: user.id,
+            title: `${emoji} ${announcement.title}`,
+            message: announcement.content.length > 150 
+              ? announcement.content.substring(0, 150) + '...' 
+              : announcement.content,
+            type: 'ANNOUNCEMENT',
+            relatedId: announcementId,
+            isRead: false,
+          },
+        });
+        console.log(`📱 In-app notification created for ${user.name}`);
+      } catch (notifError) {
+        console.error(`Failed to create in-app notification for ${user.name}:`, notifError);
       }
     }
 
@@ -357,7 +519,12 @@ _Sistem Manajemen Warga RT 001 RW 016_`;
 export type NotificationType =
   | "PAYMENT_SUCCESS"
   | "PAYMENT_FAILED"
+  | "PAYMENT_REMINDER"
+  | "SURAT_SUBMITTED"
+  | "SURAT_APPROVED"
+  | "SURAT_REJECTED"
   | "ANNOUNCEMENT"
+  | "ACTIVITY"
   | "SYSTEM";
 
 export async function createNotification(

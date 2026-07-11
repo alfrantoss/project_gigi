@@ -65,7 +65,7 @@ export async function POST(
       surat.userId,
       'Pengajuan Surat Ditolak',
       `Pengajuan surat "${surat.title}" Anda ditolak. Alasan: ${reason}`,
-      'SYSTEM',
+      'SURAT_REJECTED',
       surat.id,
     );
 

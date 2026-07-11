@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { createNotification } from '@/utils/notification';
 
 export async function GET(request: NextRequest) {
   try {
@@ -97,6 +98,41 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Send notification to all admins (SUPER_ADMIN and KETUA_RT)
+    try {
+      const admins = await prisma.user.findMany({
+        where: {
+          role: { in: ['SUPER_ADMIN', 'KETUA_RT'] },
+          isActive: true,
+        },
+      });
+
+      const suratTypeMap: Record<string, string> = {
+        DOMISILI: 'Surat Keterangan Domisili',
+        PENGANTAR: 'Surat Pengantar',
+        IZIN_USAHA: 'Surat Izin Usaha',
+        KETERANGAN_TIDAK_MAMPU: 'Surat Keterangan Tidak Mampu',
+        LAINNYA: 'Surat Lainnya',
+      };
+
+      const suratTypeName = suratTypeMap[type] || 'Surat';
+
+      for (const admin of admins) {
+        await createNotification(
+          admin.id,
+          `📄 Pengajuan Surat Baru`,
+          `${surat.user.name} mengajukan ${suratTypeName}. Silakan tinjau dan setujui.`,
+          'SURAT_SUBMITTED',
+          surat.id
+        );
+      }
+
+      console.log(`✅ Admin notifications sent for new surat submission from ${surat.user.name}`);
+    } catch (notificationError) {
+      console.error('Failed to send admin notifications:', notificationError);
+      // Don't fail the main request if notification fails
+    }
 
     return NextResponse.json(
       {

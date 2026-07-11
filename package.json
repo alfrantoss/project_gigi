@@ -18,6 +18,8 @@
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:cleanup": "tsx prisma/cleanup-dummy-data.ts",
     "prisma:cleanup-safe": "tsx prisma/cleanup-dummy-data-safe.ts",
+    "test:notifications": "tsx scripts/test-notifications.ts",
+    "test:surat-notifications": "tsx scripts/test-surat-notifications.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

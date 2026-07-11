@@ -113,7 +113,7 @@ export async function POST(
       surat.userId,
       'Pengajuan Surat Disetujui',
       `Pengajuan surat "${surat.title}" Anda telah disetujui dan dapat diunduh.`,
-      'SYSTEM',
+      'SURAT_APPROVED',
       surat.id,
     );
 

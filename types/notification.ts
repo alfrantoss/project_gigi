@@ -1,7 +1,12 @@
 export type NotificationType =
   | "PAYMENT_SUCCESS"
   | "PAYMENT_FAILED"
+  | "PAYMENT_REMINDER"
+  | "SURAT_SUBMITTED"
+  | "SURAT_APPROVED"
+  | "SURAT_REJECTED"
   | "ANNOUNCEMENT"
+  | "ACTIVITY"
   | "SYSTEM";
 
 export interface Notification {

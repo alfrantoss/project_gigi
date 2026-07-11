@@ -99,6 +99,31 @@ export async function POST(request: NextRequest) {
         payment.id,
       );
 
+      // Send notification to all admins about successful payment
+      try {
+        const admins = await prisma.user.findMany({
+          where: {
+            role: { in: ['SUPER_ADMIN', 'KETUA_RT', 'BENDAHARA'] },
+            isActive: true,
+          },
+        });
+
+        for (const admin of admins) {
+          await createNotification(
+            admin.id,
+            "💰 Pembayaran Diterima",
+            `${payment.user.name} telah melakukan pembayaran iuran ${payment.period} sebesar Rp ${payment.amount.toLocaleString("id-ID")}.`,
+            "SYSTEM",
+            payment.id
+          );
+        }
+
+        console.log(`✅ Admin notifications sent for payment from ${payment.user.name}`);
+      } catch (adminNotificationError) {
+        console.error('Failed to send admin notifications for payment:', adminNotificationError);
+        // Don't fail the main request if notification fails
+      }
+
       // Send WhatsApp notification
       if (payment.user.phone) {
         const waMessage = `✅ *Pembayaran Berhasil*
